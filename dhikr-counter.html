@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhikr Counter</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dhikr-counter.css">
+    <link rel="icon" type="image/png" href="/images/icon.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <!-- Firebase CDN Scripts -->
+    
+    <!-- OneSignal Push Notifications -->
+    <script>
+        console.log('Starting OneSignal script load...');
+        window.oneSignalLoadStart = Date.now();
+    </script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" onload="console.log('OneSignal script loaded successfully in', Date.now() - window.oneSignalLoadStart, 'ms'); console.log('OneSignal available:', typeof window.OneSignal, window.OneSignal);" onerror="console.error('Failed to load OneSignal script');"></script>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RBE4169XBF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RBE4169XBF');
+    </script>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <!-- Side Drawer -->
+        <nav class="side-drawer" id="sideDrawer">
+            <div class="drawer-header">
+                <h2>
+                    <img src="images/icon.png" width="28" height="28">
+                    <span>Islamic Tools</span>
+                </h2>
+                <button class="close-drawer" id="closeDrawer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="drawer-menu">
+                <a href="index.html" class="menu-item" data-page="home">
+                    <i class="fas fa-home"></i>
+                    <span id="menu-prayer-times">Prayer Times</span>
+                </a>
+                <a href="prayer-tracker.html" class="menu-item" data-page="tracker">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Prayer Tracker</span>
+                </a>
+                <a href="dhikr-counter.html" class="menu-item active" data-page="dhikr">
+                    <i class="fas fa-stopwatch"></i>
+                    <span id="menu-dhikr">Dhikr Counter</span>
+                </a>
+                <a href="99-names.html" class="menu-item" data-page="names">
+                    <i class="fas fa-star-and-crescent"></i>
+                    <span id="menu-names">99 Names of Allah</span>
+                </a>
+                <a href="nearby-mosques.html" class="menu-item" data-page="mosques">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="menu-mosques">Nearby Mosques</span>
+                </a>
+                <a href="islamic-calendar.html" class="menu-item" data-page="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="menu-calendar">Islamic Calendar</span>
+                </a>
+                <a href="qibla.html" class="menu-item" data-page="qibla">
+                    <i class="fas fa-compass"></i>
+                    <span id="menu-qibla">Qibla Direction</span>
+                </a>
+                <a href="settings.html" class="menu-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span id="menu-settings">Settings</span>
+                </a>
+                <a href="login.html" class="menu-item" id="authMenuItem">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span id="authText">Login</span>
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Drawer Overlay -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+
+        <header class="header">
+            <div class="header-left">
+                <button class="hamburger-menu" id="hamburgerMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="title">
+                    <i class="fas fa-stopwatch"></i>
+                    <span id="app-title">Dhikr Counter</span>
+                </h1>
+            </div>
+            <div class="controls">
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="langToggle" class="lang-toggle">
+                    <span id="lang-text">বাংলা</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="dhikr-container">
+                <!-- Current Dhikr Display -->
+                <div class="dhikr-card">
+                    <div class="dhikr-text">
+                        <div class="dhikr-arabic" id="dhikrArabic">
+                            سُبْحَانَ اللهِ
+                        </div>
+                        <div class="dhikr-transliteration" id="dhikrTransliteration">
+                            Subhan Allah
+                        </div>
+                        <div class="dhikr-translation" id="dhikrTranslation">
+                            Glory be to Allah
+                        </div>
+                        <div class="dhikr-meaning" id="dhikrMeaning">
+                            Meaning: Glorifying Allah above all imperfections
+                        </div>
+                        <div class="dhikr-reward" id="dhikrReward">
+                            Reward: A palm tree is planted for the reciter in Paradise
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Counter Circle -->
+                <div class="counter-section">
+                    <div class="counter-wrapper">
+                        <svg class="progress-ring" width="300" height="300">
+                            <defs>
+                                <filter id="glow">
+                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                    <feMerge> 
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <circle class="progress-ring__circle-bg" 
+                                stroke="var(--border)" 
+                                stroke-width="6" 
+                                fill="transparent" 
+                                r="140" 
+                                cx="150" 
+                                cy="150"/>
+                            <circle class="progress-ring__circle" 
+                                stroke="var(--accent)" 
+                                stroke-width="6" 
+                                fill="transparent" 
+                                r="140" 
+                                cx="150" 
+                                cy="150"
+                                filter="url(#glow)"/>
+                        </svg>
+                        
+                        <div class="tap-button" id="tapButton">
+                            <div class="count-display">
+                                <div class="count-number" id="currentCount">0</div>
+                                <div class="count-target" id="count-target-text">of <span id="targetCount">33</span></div>
+                            </div>
+                            <div class="tap-instruction" id="tap-instruction">Tap to Count</div>
+                        </div>
+                    </div>
+                    
+                    <div class="today-stats">
+                        <i class="fas fa-calendar-day"></i>
+                        <span id="today-total-label">Today's Total:</span> <span id="todayTotal">0</span>
+                    </div>
+                </div>
+
+                <!-- Controls Row -->
+                <div class="controls-row">
+                    <button class="control-btn" id="resetBtn">
+                        <i class="fas fa-undo"></i>
+                        <span id="reset-btn-text">Reset</span>
+                    </button>
+                    <button class="control-btn" id="pauseBtn">
+                        <i class="fas fa-pause"></i>
+                        <span id="pause-btn-text">Pause</span>
+                    </button>
+                    <button class="control-btn" id="settingsBtn">
+                        <i class="fas fa-cog"></i>
+                        <span id="settings-btn-text">Settings</span>
+                    </button>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="streakCount">0</div>
+                            <div class="stat-label" id="day-streak-label">Day Streak</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="completedSessions">0</div>
+                            <div class="stat-label" id="completed-label">Completed</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="dailyProgress">0%</div>
+                            <div class="stat-label" id="daily-goal-label">Daily Goal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dhikr Selection -->
+                <div class="dhikr-selection">
+                    <div class="section-header">
+                        <h3>
+                            <i class="fas fa-stopwatch"></i>
+                            <span id="choose-dhikr-title">Choose Dhikr</span>
+                        </h3>
+                        <div class="dhikr-search">
+                            <input type="text" id="dhikrSearch" placeholder="Search dhikr..." class="search-input">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+                    <div class="dhikr-grid" id="dhikrGrid">
+                        <div class="dhikr-option active" data-dhikr="subhanallah">
+                            <div class="dhikr-option-content">
+                                <div class="dhikr-arabic-small">سُبْحَانَ اللهِ</div>
+                                <div class="dhikr-name">Subhan Allah</div>
+                                <div class="dhikr-target">33x</div>
+                            </div>
+                        </div>
+                        <div class="dhikr-option" data-dhikr="alhamdulillah">
+                            <div class="dhikr-option-content">
+                                <div class="dhikr-arabic-small">الْحَمْدُ للهِ</div>
+                                <div class="dhikr-name">Alhamdulillah</div>
+                                <div class="dhikr-target">33x</div>
+                            </div>
+                        </div>
+                        <div class="dhikr-option" data-dhikr="allahuakbar">
+                            <div class="dhikr-option-content">
+                                <div class="dhikr-arabic-small">اللهُ أَكْبَر</div>
+                                <div class="dhikr-name">Allahu Akbar</div>
+                                <div class="dhikr-target">34x</div>
+                            </div>
+                        </div>
+                        <div class="dhikr-option" data-dhikr="lahawla">
+                            <div class="dhikr-option-content">
+                                <div class="dhikr-arabic-small">لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ</div>
+                                <div class="dhikr-name">La hawla wa la quwwata illa billah</div>
+                                <div class="dhikr-target">100x</div>
+                            </div>
+                        </div>
+                        <div class="dhikr-option" data-dhikr="istighfar">
+                            <div class="dhikr-option-content">
+                                <div class="dhikr-arabic-small">أَسْتَغْفِرُ اللهَ</div>
+                                <div class="dhikr-name">Astaghfirullah</div>
+                                <div class="dhikr-target">100x</div>
+                            </div>
+                        </div>
+                        <div class="dhikr-option" data-dhikr="salawat">
+                            <div class="dhikr-option-content">
+                                <div class="dhikr-arabic-small">اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ</div>
+                                <div class="dhikr-name">Salawat</div>
+                                <div class="dhikr-target">100x</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal-overlay" id="settingsModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>
+                        <i class="fas fa-cog"></i>
+                        <span id="dhikr-settings-title">Dhikr Settings</span>
+                    </h3>
+                    <button class="modal-close" id="closeSettings">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-grid">
+                        <div class="setting-group">
+                            <h4 id="feedback-title">
+                                <i class="fas fa-bell"></i>
+                                <span>Feedback</span>
+                            </h4>
+                            <div class="setting-item">
+                                <label>
+                                    <span id="vibration-label">Vibration on count</span>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="vibrationToggle" checked>
+                                        <span class="slider"></span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <span id="sound-label">Sound feedback</span>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="soundToggle" checked>
+                                        <span class="slider"></span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h4 id="goals-targets-title">
+                                <i class="fas fa-target"></i>
+                                <span>Goals & Targets</span>
+                            </h4>
+                            
+                            <div class="setting-item">
+                                <label for="dailyGoal" id="daily-goal-input-label">Daily goal</label>
+                                <input type="number" id="dailyGoal" min="1" max="10000" value="100" class="number-input">
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h4 id="reminders-title">
+                                <i class="fas fa-clock"></i>
+                                <span>Reminders</span>
+                            </h4>
+                            <div class="setting-item">
+                                <label for="reminderTime" id="reminder-time-label">Daily reminder time</label>
+                                <input type="time" id="reminderTime" value="" class="time-input">
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <span id="enable-reminders-label">Enable reminders</span>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="reminderToggle">
+                                        <span class="slider"></span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h4 id="statistics-title">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Statistics</span>
+                            </h4>
+                            <div class="setting-item">
+                                <label for="statsPeriod" id="stats-period-label">Statistics period</label>
+                                <select id="statsPeriod" class="select-input">
+                                    <option value="today" id="stats-today-option">Today</option>
+                                    <option value="week" id="stats-week-option">This Week</option>
+                                    <option value="month" id="stats-month-option">This Month</option>
+                                    <option value="all" id="stats-all-option">All Time</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button id="resetAllBtn" class="btn secondary">
+                            <i class="fas fa-trash"></i>
+                            <span id="reset-all-data-btn-text">Reset All Data</span>
+                        </button>
+                        <button id="exportBtn" class="btn secondary">
+                            <i class="fas fa-download"></i>
+                            <span id="export-data-btn-text">Export Data</span>
+                        </button>
+                        <button id="viewStatsBtn" class="btn">
+                            <i class="fas fa-chart-bar"></i>
+                            <span id="view-stats-btn-text">View Statistics</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Modal -->
+        <div class="modal-overlay" id="statsModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>
+                        <i class="fas fa-chart-bar"></i>
+                        <span id="dhikr-stats-title">Dhikr Statistics</span>
+                    </h3>
+                    <button class="modal-close" id="closeStats">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="stats-display" id="statsDisplay">
+                        <!-- Statistics will be populated by JavaScript -->
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p id="loading-stats-text">Loading statistics...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/shared.js"></script>
+    <script src="/js/onesignal-config.js"></script>
+    <script type="module" src="/js/firebase-config.js"></script>
+    <script type="module" src="/js/auth-context.js"></script>
+    <script type="module" src="/js/auth.js"></script>
+    <script type="module" src="/js/data-sync.js"></script>
+    <script src="/js/realtime-sync.js"></script>
+    <script src="/js/dhikr-counter.js"></script>
+    <script>
+        // Auth state change listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const authMenuItem = document.getElementById('authMenuItem');
+            const authText = document.getElementById('authText');
+
+            if (authMenuItem && authText && window.setupAuthObserver && window.logoutUser) {
+                window.setupAuthObserver((user) => {
+                    if (user) {
+                        // User is logged in
+                        authText.textContent = 'Logout';
+                        authMenuItem.href = '#'; // Prevent navigation for logout
+                        authMenuItem.removeEventListener('click', handleAuthClick);
+                        authMenuItem.addEventListener('click', handleAuthClick);
+                    } else {
+                        // User is logged out
+                        authText.textContent = 'Login';
+                        authMenuItem.href = 'login.html';
+                        authMenuItem.removeEventListener('click', handleAuthClick);
+                    }
+                });
+
+                const handleAuthClick = async (event) => {
+                    if (authText.textContent === 'Logout') {
+                        event.preventDefault(); // Prevent default link behavior
+                        const result = await window.logoutUser();
+                        if (result.success) {
+                            // Optionally, redirect to login page or home page after logout
+                            window.location.href = 'login.html'; 
+                        } else {
+                            console.error('Logout failed:', result.error);
+                            alert('Logout failed. Please try again.');
+                        }
+                    }
+                };
+            }
+        });
+    </script>
+</body>
+</html>

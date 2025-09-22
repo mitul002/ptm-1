@@ -1,0 +1,1074 @@
+/* Nearby Mosques Specific Styles */
+
+:root {
+    --nearby-bg-primary: #0f172a;
+    --nearby-bg-secondary: #1e293b;
+    --nearby-bg-card: #334155;
+    --nearby-text-primary: #f8fafc;
+    --nearby-text-secondary: #cbd5e1;
+    --nearby-accent: #3b82f6;
+    --nearby-border: #475569;
+    --nearby-link: #60a5fa;
+    --nearby-icon: #94a3b8;
+}
+
+[data-theme="light"] {
+    --nearby-bg-primary: #ffffff;
+    --nearby-bg-secondary: #f1f5f9;
+    --nearby-bg-card: #ffffff;
+    --nearby-text-primary: #1e293b;
+    --nearby-text-secondary: #64748b;
+    --nearby-accent: #2563eb;
+    --nearby-border: #e2e8f0;
+    --nearby-link: #3b82f6;
+    --nearby-icon: #64748b;
+}
+
+.mosques-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    gap: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Search & Filter Section */
+.search-filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.search-box {
+    position: relative;
+    flex: 1;
+}
+
+.search-box i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--nearby-text-secondary);
+    font-size: 16px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    border: 2px solid var(--nearby-border);
+    border-radius: 12px;
+    background: var(--nearby-bg-card);
+    color: var(--nearby-text-primary);
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--nearby-accent);
+    box-shadow: 0 0 0 3px var(--nearby-accent-glow);
+}
+
+.filter-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 10px 16px;
+    border: 2px solid var(--nearby-border);
+    border-radius: 10px;
+    background: var(--nearby-bg-card);
+    color: var(--nearby-text-primary);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--nearby-accent);
+}
+
+#getCurrentLocation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background:  var(--nearby-accent);
+    color: white;
+    font-size: 14px;
+
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#getCurrentLocation:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+#getCurrentLocation:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#getCurrentLocation i {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+#getCurrentLocation:hover i {
+    transform: rotate(360deg);
+}
+
+/* Location Status */
+.location-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--nearby-bg-card);
+    border: 2px solid var(--nearby-border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--nearby-text-primary);
+    font-size: 14px;
+}
+
+.status-item i {
+    color: var(--nearby-accent);
+    font-size: 16px;
+}
+
+/* View Controls */
+.view-section {
+    margin-bottom: 24px;
+}
+
+.view-controls {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    background: var(--nearby-bg-card);
+    padding: 4px;
+    border-radius: 12px;
+    border: 2px solid var(--nearby-border);
+    width: 100%; /* Full width like other buttons */
+    max-width: 400px; /* Reasonable max width */
+    margin: 0 auto;
+}
+
+.view-btn {
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    color: var(--nearby-text-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-btn.active {
+    background: var(--nearby-accent);
+    color: white;
+}
+
+.view-btn:hover:not(.active) {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--nearby-text-primary);
+}
+
+/* Content Views */
+.content-view {
+    display: none;
+}
+
+.content-view.active {
+    display: block;
+}
+
+.browse-nearby-btn-small {
+    padding: 8px 16px;
+    border: 2px solid var(--nearby-accent);
+    border-radius: 8px;
+    background: var(--nearby-accent);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.browse-nearby-btn-small:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.favorite-btn.favorited {
+    background: #27ae60; /* Green color for saved state */
+    border-color: #27ae60; /* Green border for saved state */
+    color: white; /* Ensure text/icon color is white */
+}
+
+/* Additional favorite styles */
+.favorite-date {
+    color: var(--nearby-text-secondary);
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    background: var(--surface-secondary);
+    border-radius: 8px;
+}
+
+.remove-favorite-btn {
+    background: transparent;
+    border: 2px solid var(--error);
+    color: var(--error);
+    transition: all 0.3s ease;
+}
+
+.remove-favorite-btn:hover {
+    background: var(--error);
+    color: white;
+}
+
+/* Organized Map Content Styles - No Scroll */
+/* Map view styles */
+.map-content-organized {
+      padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.map-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.map-title-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.map-title-compact h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--nearby-text-primary);
+}
+
+.map-title-compact i {
+    color: var(--nearby-accent);
+    font-size: 18px;
+}
+
+.location-coords {
+    font-size: 12px;
+    color: var(--nearby-text-secondary);
+    background-color: var(--nearby-bg-secondary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+.map-stats-compact {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--nearby-border);
+    border-radius: 8px;
+    padding: 12px;
+    background-color: var(--nearby-bg-secondary);
+}
+
+.stat-compact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.stat-compact i {
+    color: var(--nearby-accent);
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--nearby-text-primary);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--nearby-text-secondary);
+}
+
+.nearest-mosque-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: var(--nearby-bg-secondary);
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.mosque-info-compact {
+    flex: 1;
+}
+
+.mosque-name-compact {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: var(--nearby-text-primary);
+}
+
+.mosque-address-compact {
+    color: var(--nearby-text-secondary);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mosque-address-compact i {
+    font-size: 12px;
+    color: var(--nearby-icon);
+}
+
+.mosque-actions-compact {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-compact {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-compact.primary {
+    background-color: var(--nearby-accent);
+    color: white;
+}
+
+.btn-compact.secondary {
+    background-color: var(--nearby-bg-secondary);
+    color: var(--nearby-text-primary);
+}
+
+.btn-compact.primary:hover {
+    background-color: var(--nearby-link);
+}
+
+.btn-compact.secondary:hover {
+    background-color: var(--nearby-bg-card);
+}
+
+.map-note-compact {
+    text-align: center;
+    padding: 12px;
+    background-color: rgba(245, 158, 11, 0.1);
+    border-radius: 8px;
+    color: #f59e0b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.map-note-compact i {
+    color: #f59e0b;
+}
+
+.map-no-location-compact, .map-empty-compact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.no-location-icon, .empty-icon {
+    font-size: 48px;
+    color: var(--nearby-icon);
+    margin-bottom: 16px;
+}
+
+.no-location-text h3, .empty-text h3 {
+    margin: 0 0 8px;
+    color: var(--nearby-text-primary);
+}
+
+.no-location-text p, .empty-text p {
+    margin: 0 0 20px;
+    color: var(--nearby-text-secondary);
+}
+
+.enable-location-btn-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    background-color: var(--nearby-accent);
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.enable-location-btn-compact:hover {
+    background-color: var(--nearby-link);
+}
+
+.empty-actions-compact {
+    display: flex;
+    gap: 8px;
+}
+
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .map-content-organized {
+        padding: 16px;
+    }
+    
+    .map-stats-compact {
+        gap: 8px;
+    }
+    
+    .stat-compact {
+        padding: 10px 6px;
+    }
+    
+    .stat-compact i {
+        font-size: 18px;
+    }
+    
+    .stat-value {
+        font-size: 14px;
+    }
+    
+    .mosque-actions-compact {
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .btn-compact {
+        padding: 10px 16px;
+        justify-content: center;
+    }
+}
+
+.favorite-btn.favorited:hover {
+    background: #1e8449; /* Darker green on hover */
+    border-color: #1e8449;
+}
+
+/* Loading State */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 20px;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--nearby-border);
+    border-top: 4px solid var(--nearby-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+    font-size: 16px;
+    color: var(--nearby-text-secondary);
+}
+
+/* Error State */
+.error-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 20px;
+    text-align: center;
+}
+
+.error-state i,
+.empty-state i {
+    font-size: 64px;
+    color: var(--nearby-text-secondary);
+    opacity: 0.5;
+}
+
+.error-state h3,
+.empty-state h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--nearby-text-primary);
+    margin: 0;
+}
+
+.error-state p,
+.empty-state p {
+    font-size: 16px;
+    color: var(--nearby-text-secondary);
+    margin: 0;
+    max-width: 400px;
+}
+
+.retry-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 2px solid var(--nearby-accent);
+    border-radius: 8px;
+    background: var(--nearby-accent);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Mosques List */
+.mosques-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mosque-card {
+    background: var(--nearby-bg-card);
+    border: 2px solid var(--nearby-border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden; /* Added for ::before pseudo-element */
+}
+
+.mosque-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.mosque-card:hover::before {
+    left: 100%;
+}
+
+.mosque-card:hover {
+    border-color: var(--accent); /* Use var(--accent) for consistency */
+    transform: translateY(-5px); /* More pronounced lift */
+    box-shadow: var(--shadow), var(--glow); /* Consistent shadow and glow */
+}
+
+.mosque-card.expanded {
+    border-color: var(--nearby-accent);
+    box-shadow: 0 8px 32px var(--nearby-accent-glow);
+}
+
+.mosque-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--nearby-accent);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.real-data-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #10b981;
+    color: white;
+    font-size: 8px;
+    font-weight: 600;
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mosque-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.mosque-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--nearby-text-primary);
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.mosque-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--nearby-text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.mosque-address i {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.mosque-quick-info {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.distance-badge {
+    background: var(--nearby-accent);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.rating-badge {
+    background: #f39c12;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.expand-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--nearby-border);
+    border-radius: 50%;
+    background: var(--nearby-bg-card);
+    color: var(--nearby-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.mosque-card:hover .expand-btn {
+    border-color: var(--nearby-accent);
+    background: var(--nearby-accent);
+    color: white;
+}
+
+/* Expandable Details */
+.mosque-details {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid var(--nearby-border);
+    overflow: hidden; /* Added for smooth max-height transition */
+    max-height: 0; /* Default collapsed state */
+    opacity: 0; /* Default collapsed state */
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out; /* Smooth transition */
+}
+
+.mosque-card.expanded .mosque-details {
+    max-height: 500px; /* A value large enough to contain content */
+    opacity: 1;
+}
+
+/* The @keyframes slideDown is no longer needed here as the transition property handles the animation */
+
+.mosque-details.show {
+    display: block;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: grid;
+    grid-template-columns: 24px 1fr 2fr;
+    gap: 12px;
+    align-items: center;
+    font-size: 14px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--nearby-border);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item i {
+    color: var(--nearby-accent);
+    text-align: center;
+}
+
+.detail-item span {
+    color: var(--nearby-text-secondary);
+    font-weight: 500;
+}
+
+.detail-value {
+    color: var(--nearby-text-primary) !important;
+    font-weight: 400 !important;
+}
+
+.detail-value.link {
+    color: var(--nearby-accent) !important;
+    text-decoration: none;
+    font-weight: 500 !important;
+}
+
+.detail-value.link:hover {
+    text-decoration: underline;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Map Container */
+.map-container {
+    height: 400px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--nearby-bg-secondary);
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--nearby-bg-card);
+    align-items: center;
+    justify-content: center;
+}
+
+.map-content {
+    text-align: center;
+    color: var(--nearby-text-secondary);
+}
+
+.map-content i {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.map-content h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--nearby-text-primary);
+    margin-bottom: 8px;
+}
+
+.map-content p {
+    font-size: 16px;
+    margin-bottom: 24px;
+}
+
+.enable-location-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: 2px solid var(--nearby-accent);
+    border-radius: 12px;
+    background: var(--nearby-accent);
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.enable-location-btn:hover {
+    background: var(--primary-dark);
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 2px solid var(--nearby-border);
+    border-radius: 10px;
+    background: var(--nearby-bg-card);
+    color: var(--nearby-text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    border-color: var(--nearby-accent);
+    background: var(--nearby-accent);
+    color: white;
+}
+
+.action-btn.primary {
+    background: var(--nearby-accent);
+    color: white;
+    border-color: var(--nearby-accent);
+}
+
+.action-btn.primary:hover {
+    background: var(--primary-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mosques-container {
+        padding: 16px;
+    }
+    
+    .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-select,
+    .location-btn {
+        min-width: 0;
+    }
+    
+    .location-status {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .view-controls {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%; /* Full width on mobile */
+        max-width: none; /* No max width restriction on mobile */
+    }
+    
+    .view-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 12px 8px; /* Reduce horizontal padding for mobile */
+    }
+    
+    /* Hide text, show only icons on mobile */
+    .view-btn span {
+        display: none;
+    }
+    
+    .view-btn {
+        gap: 0; /* Remove gap since there's only icon */
+    }
+    
+    .view-btn i {
+        font-size: 18px; /* Slightly larger icon for better touch target */
+    }
+    
+    .mosque-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        padding: 16px; /* Reduced padding for mobile */
+        margin-bottom: 12px; /* Tighter spacing between cards */
+    }
+    
+    .mosque-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+        align-self: center; /* Center the icon */
+    }
+    
+    .mosque-info {
+        text-align: left;
+        width: 100%;
+    }
+    
+    .mosque-name {
+        font-size: 16px;
+        text-align: center; /* Center mosque name on mobile */
+        margin-bottom: 8px;
+    }
+    
+    .mosque-address {
+        font-size: 13px; /* Smaller address text */
+        justify-content: center; /* Center address */
+        margin-bottom: 8px;
+    }
+    
+    .mosque-quick-info {
+        justify-content: center;
+        flex-wrap: wrap; /* Allow badges to wrap on mobile */
+        gap: 6px;
+    }
+    
+    /* Make badges smaller on mobile */
+    .distance-badge,
+    .rating-badge,
+    .favorite-date {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+    
+    .expand-btn {
+        align-self: center;
+        width: 36px; /* Smaller expand button */
+        height: 36px;
+        font-size: 14px;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 12px; /* Reduce gap between detail items */
+    }
+    
+    .detail-item {
+        grid-template-columns: 24px 1fr;
+        gap: 8px;
+        padding: 8px 12px; /* Smaller padding */
+        font-size: 13px; /* Smaller text */
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr;
+        gap: 8px; /* Tighter button spacing */
+    }
+    
+    .action-btn {
+        padding: 10px 16px; /* Smaller buttons */
+        font-size: 13px;
+    }
+    
+    /* Hover effects disabled on touch devices */
+    .mosque-card:hover {
+        transform: none;
+    }
+    
+    /* Better spacing for mosque list */
+    .mosques-list {
+        gap: 12px;
+        padding: 0 8px; /* Add some horizontal padding */
+    }
+    
+    .detail-item span:first-of-type {
+        display: none;
+    }
+    
+    .map-container {
+        height: 300px;
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-controls {
+        gap: 8px;
+    }
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qibla Direction Test</title>
+    <link rel="stylesheet" href="../css/qibla.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body { padding: 20px; }
+        .test-container { max-width: 600px; margin: auto; }
+        .output { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-top: 20px; }
+        .output p { margin: 5px 0; }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="test-container">
+        <h1>Qibla Direction Test Page</h1>
+        <p>This page tests the core functionality of the Qibla direction script (`qibla.js`).</p>
+
+        <div class="qibla-container">
+            <div class="location-info">
+                <h2 id="location-title">Location</h2>
+                <p id="current-location">Requesting location...</p>
+                <p id="location-coords"></p>
+            </div>
+
+            <div class="compass-container">
+                <div class="compass" id="compass">
+                    <div class="compass-face" id="compass-face">
+                        <div class="direction north direction-letter">N</div>
+                        <div class="direction east direction-letter">E</div>
+                        <div class="direction south direction-letter">S</div>
+                        <div class="direction west direction-letter">W</div>
+                        <div class="needle" id="needle"></div>
+                        <div class="qibla-pointer" id="qiblaPointer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-message" id="statusMessage" style="display: none;">
+                <p></p>
+            </div>
+
+            <button class="calibrate-btn" id="calibrateButton">Calibrate Compass</button>
+        </div>
+
+        <div class="output">
+            <h3>Test Output:</h3>
+            <p><strong>Qibla Bearing:</strong> <span id="qibla-bearing">--</span></p>
+            <p><strong>Distance to Makkah:</strong> <span id="makkah-distance">--</span></p>
+            <p><strong>Current Heading:</strong> <span id="current-heading">--</span></p>
+            <p><strong>Accuracy:</strong> <span id="accuracy">--</span></p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/shared.js"></script>
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/data-sync.js"></script>
+    <script src="../js/realtime-sync.js"></script>
+    <script src="../js/qibla.js"></script>
+</body>
+</html>

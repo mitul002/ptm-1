@@ -1,0 +1,847 @@
+:root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent: #3b82f6;
+            --accent-glow: #60a5fa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #475569;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            --glow: 0 0 20px rgba(59, 130, 246, 0.5);
+            --bg-hover: #2d3a4d; /* New variable for hover background */
+            
+            /* Additional variables for 99 Names page */
+            --primary-color: #3b82f6;
+            --primary-color-alpha: rgba(59, 130, 246, 0.2);
+            --card-bg: #334155;
+            --border-color: #475569;
+            --hover-bg: rgba(59, 130, 246, 0.1);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #3b82f6;
+            --accent-glow: #2563eb;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --border: #e2e8f0;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --glow: 0 0 20px rgba(59, 130, 246, 0.3);
+            --bg-hover: #e2e8f0; /* New variable for hover background in light mode */
+            
+            /* Additional variables for 99 Names page - Light Mode */
+            --primary-color: #3b82f6;
+            --primary-color-alpha: rgba(59, 130, 246, 0.2);
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --hover-bg: rgba(59, 130, 246, 0.05);
+        }
+
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans Bengali', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            padding-top: 150px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 22px;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            border-bottom: 1px solid #2e4a6c;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger-menu {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px;
+            height: 18px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            height: 2px;
+            width: 100%;
+            background: var(--text-primary);
+            border-radius: 1px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-origin: center;
+        }
+
+        .hamburger-menu.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger-menu.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Side Drawer Styles */
+        .side-drawer {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--bg-card);
+            z-index: 1002;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-right: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .side-drawer.open {
+            transform: translateX(300px);
+        }
+
+        .drawer-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+        }
+
+        .drawer-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-drawer {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .close-drawer:hover {
+            color: var(--text-primary);
+            background: var(--bg-primary);
+        }
+
+        .drawer-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-left-color: var(--accent);
+        }
+
+        .menu-item.active {
+            background: var(--bg-primary);
+            color: var(--accent);
+            border-left-color: var(--accent);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .menu-item span {
+            font-weight: 500;
+        }
+
+        .menu-item small {
+            position: absolute;
+            right: 20px;
+            font-size: 0.7rem;
+            background: var(--warning);
+            color: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent; 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+
+
+        .controls {
+            display: flex;
+            gap: 11px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle, .lang-toggle, .notification-toggle {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 7px 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .theme-toggle:hover, .lang-toggle:hover, .notification-toggle:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        /* Notification state specific styles */
+        .notification-toggle.notification-off {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .notification-toggle.notification-obligatory {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .notification-toggle.notification-all {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .notification-toggle.notification-off:hover {
+            color: var(--text-primary);
+            opacity: 1;
+        }
+
+        .notification-toggle.notification-obligatory:hover {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        .notification-toggle.notification-all:hover {
+            background: var(--accent-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+
+        /* Alternative classes for shared.js compatibility */
+        .notification-toggle.partial {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .notification-toggle.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .notification-toggle.partial:hover {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        .notification-toggle.active:hover {
+            background: var(--accent-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+
+        /* Push notifications enabled indicator */
+        .notification-toggle.push-enabled {
+            position: relative;
+        }
+
+        .notification-toggle.push-enabled::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 2px solid var(--bg-secondary);
+            animation: pulse-push 2s infinite;
+        }
+
+        @keyframes pulse-push {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Enhanced tooltip for push notifications */
+        .notification-toggle.push-enabled:hover::before {
+            content: attr(title);
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .location-picker {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .location-input-container {
+            position: relative;
+        }
+
+        .location-input {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 15px;
+            color: var(--text-primary);
+            font-size: 14px;
+            min-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .location-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        .suggestions-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 0 0 12px 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color:  rgba(96, 165, 250, 0.2 ) transparent  ; /* thumb | track */
+    z-index: 100;
+    display: none;
+}
+
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 11px 15px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--accent-glow);
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        .progress-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .current-time {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .next-prayer {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-glow) 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .location-current-time {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: left;
+        }
+
+        .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .prayer-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prayer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .prayer-card:hover::before {
+            left: 100%;
+        }
+
+        .prayer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow), var(--glow);
+        }
+
+        .prayer-card.active {
+            border-color: var(--success);
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 185, 129, 0.1) 100%);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+            }
+        }
+
+        .prayer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .prayer-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .prayer-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%);
+            color: white;
+        }
+
+        .prayer-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-upcoming {
+            background: var(--warning);
+            color: white;
+        }
+
+        .status-passed {
+            background: var(--text-secondary);
+            color: var(--bg-primary);
+        }
+
+        .prayer-times {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .time-block {
+            text-align: center;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .time-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .time-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .countdown {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            font-weight: 500;
+            color: var(--danger);
+        }
+
+        .banned-time {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(239, 68, 68, 0.1) 100%);
+        }
+
+        .banned-time .prayer-icon {
+            background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+        }
+
+        .banned-time .time-block {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .banned-time .time-value {
+            color: #ef4444;
+        }
+
+        .hijri-date {
+            text-align: center;
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .hijri-date h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: var(--danger);
+            margin: 20px 0;
+        }
+
+        .notification-permission {
+            background: var(--bg-card);
+            border: 1px solid var(--warning);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .prayer-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+            
+            /* New rules for location picker and input to allow shrinking */
+            .location-picker {
+                flex-wrap: nowrap; /* Prevent location picker items from wrapping */
+            }
+
+            .location-input-container {
+                flex-grow: 1; /* Allow the input container to grow and shrink */
+                min-width: unset; /* Remove any minimum width constraints */
+                width: 1%; /* Helps it shrink aggressively when space is tight */
+            }
+
+            .location-input {
+                min-width: unset; /* Remove minimum width constraint */
+                width: 100%; /* Make input fill its flexible container */
+            }
+
+            /* Optional adjustments for controls spacing and button padding */
+            .controls {
+                gap: 8px; /* Reduce gap between control buttons */
+            }
+
+         
+        }
+
+        /* This media query remains separate as it targets an even smaller screen size */
+        @media (max-width: 480px) {
+            .controls {
+                flex-wrap: nowrap; /* Keep all controls on one line if possible */
+                justify-content: space-between; /* Distribute space if needed */
+            }
+        }
+
+        .drawer-menu .menu-item {
+            display: flex !important; /* Ensure visibility */
+        }
+
+/* Data Conflict Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    text-align: center;
+    max-width: 450px;
+    width: 90%;
+}
+
+.modal-content h2 {
+    color: var(--accent);
+    margin-bottom: 15px;
+}
+
+.modal-content p {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: nowrap;
+}
+
+.modal-actions .btn {
+    flex: auto;
+    min-width: auto;
+    margin-bottom: 0;
+}
+
+.modal-actions .btn-local {
+    background: var(--danger);
+}
+
+.modal-actions .btn-local:hover {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); /* Red glow using danger color */
+}
+
+.modal-actions .btn-merge {
+    background: var(--success); /* Changed to green */
+    border: 1px solid var(--success); /* Changed border to green */
+    color: white; /* Changed text color to white for better contrast */
+}
+
+.modal-actions .btn-merge:hover {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); /* Green glow using success color */
+}

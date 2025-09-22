@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Test Suite</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .test-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .card-header {
+            background-color: #3498db;
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .card-body p {
+            margin: 0 0 1rem 0;
+            line-height: 1.6;
+            color: #555;
+        }
+        .card-footer {
+            padding: 0 1.5rem 1.5rem;
+            text-align: right;
+        }
+        .test-link {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #2980b9;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .test-link:hover {
+            background-color: #2471a3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Comprehensive Test Suite</h1>
+        <p>A centralized hub for testing all critical features of the application.</p>
+    </div>
+
+    <div class="test-grid">
+        <div class="test-card">
+            <div class="card-header">Authentication Test</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> This page is for testing the core user authentication flow.</p>
+                <p><strong>What to test:</strong> Verify that users can successfully sign up for a new account, log in with existing credentials, and log out. Check for appropriate error messages on failed attempts.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/auth-test.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <div class="card-header">Firebase Auth Detailed Test</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> A more in-depth test page for all Firebase Authentication capabilities.</p>
+                <p><strong>What to test:</strong> Includes social media logins (e.g., Google), email verification, and user profile information updates. Ensure all methods work as expected and data is correctly stored in Firebase.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/Firebase Authentication Test.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <div class="card-header">Firestore v9 Test</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> To validate the application's integration with the Firestore database (using the v9 modular SDK).</p>
+                <p><strong>What to test:</strong> Confirm that data can be created, read, updated, and deleted (CRUD operations). Pay special attention to the correctness of data queries and the application's response to database changes.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/firestore-test-v9.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <div class="card-header">Data Persistence Test</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> To ensure that user data and application state are saved locally and persist across browser sessions.</p>
+                <p><strong>What to test:</strong> Log in, close the browser tab, reopen it, and check if the user is still logged in and their data (like settings or tracked prayers) is intact.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/persistence-test.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <div class="card-header">Privacy Compliance Test</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> To verify that the application adheres to stated privacy policies.</p>
+                <p><strong>What to test:</strong> Check what data is stored locally (e.g., in LocalStorage or IndexedDB) and ensure no sensitive information is exposed. Confirm that data handling aligns with privacy regulations.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/privacy-test.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <div class="card-header">Data Sync Test</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> To test the real-time data synchronization between the client and Firestore.</p>
+                <p><strong>What to test:</strong> Open the app on two different devices or browser windows with the same user. Make a change on one (e.g., update a setting) and verify that it reflects on the other in real-time without a manual refresh.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/test-data-sync.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <div class="card-header">Missed Prayers Tracker Test</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> Dedicated testing for the missed prayers logging and tracking feature.</p>
+                <p><strong>What to test:</strong> Add, edit, and delete missed prayers. Verify that the counts are updated correctly and that the data is accurately saved to the user's account in Firestore.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/test-missed-prayers.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <div class="card-header">OneSignal Push Notifications</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> To test the setup and delivery of push notifications via OneSignal.</p>
+                <p><strong>What to test:</strong> Ensure that users can subscribe to notifications. Trigger a test notification from the OneSignal dashboard to confirm it is received by the subscribed user on their device.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/test-onesignal.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <div class="card-header">Password Reset Test</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> To ensure users can securely reset their password if they forget it.</p>
+                <p><strong>What to test:</strong> Use the "Forgot Password" feature to request a password reset email. Follow the link in the email and verify that you can successfully set a new password and then log in with it.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/test-password-reset.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+
+</div>
+             <div class="test-card">
+            <div class="card-header">Qibla Test</div>
+            <div class="card-body">
+                <p><strong>Purpose:</strong> To ensure users can find the Qibla direction accurately.</p>
+                <p><strong>What to test:</strong> Verify that the Qibla direction is calculated correctly based on the user's location. Test with different locations to ensure accuracy.</p>
+            </div>
+            <div class="card-footer">
+                <a href="test pages/qibla-test.html" class="test-link" target="_blank">Run Test</a>
+                <a href="test pages/qibla-test2.html" class="test-link" target="_blank">Run Test</a>
+            </div>
+        
+    </div>
+
+</body>
+</html>

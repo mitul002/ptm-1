@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <meta name="google-site-verification" content="bO-H3k_QelC-VJ9j7s8sGjC34UgiZ1nvAccYv5q7y24" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Times - Islamic Tools</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="description" content="Islamic Prayer Times, Qibla Direction, Nearby Mosques, 99 Names of Allah, and more Islamic tools">
+    <meta name="keywords" content="prayer times, islamic, muslim, qibla, mosque, adhan, salah">
+    <meta name="author" content="Hasin Almas Mitul">
+    <link rel="canonical" href="https://prayer-times.vercel.app/">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Prayer Times - Islamic Tools">
+    <meta property="og:description" content="Accurate prayer times, Qibla direction, nearby mosques, and Islamic tools">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://prayer-times.vercel.app/">
+    <meta property="og:image" content="https://prayer-times.vercel.app/images/icon.png">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Prayer Times - Islamic Tools">
+    <meta name="twitter:description" content="Accurate prayer times, Qibla direction, nearby mosques, and Islamic tools">
+    <meta name="twitter:image" content="https://prayer-times.vercel.app/images/icon.png">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/images/icon.png">
+    <link rel="icon" type="image/png" href="/images/icon.png">
+    <link rel="shortcut icon" href="/images/icon.png" type="image/png">
+    
+    <!-- OneSignal SDK -->
+    <script>
+        console.log('Starting OneSignal script load...');
+        window.oneSignalLoadStart = Date.now();
+    </script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" 
+            onload="console.log('OneSignal script loaded successfully in', Date.now() - window.oneSignalLoadStart, 'ms'); console.log('OneSignal available:', typeof window.OneSignal, window.OneSignal);" 
+            onerror="console.error('Failed to load OneSignal script');" defer></script>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RBE4169XBF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RBE4169XBF');
+    </script>
+    
+    <!-- Stylesheets -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <!-- Side Drawer -->
+        <nav class="side-drawer" id="sideDrawer">
+            <div class="drawer-header">
+                <h2>
+                    <img src="images/icon.png" width="28" height="28" >
+                    <span>Islamic Tools</span>
+                </h2>
+                <button class="close-drawer" id="closeDrawer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="drawer-menu">
+                <a href="index.html" class="menu-item active" data-page="home">
+                    <i class="fas fa-home"></i>
+                    <span>Prayer Times</span>
+                </a>
+                <a href="prayer-tracker.html" class="menu-item" data-page="tracker">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Prayer Tracker</span>
+                </a>
+                <a href="dhikr-counter.html" class="menu-item" data-page="dhikr">
+                    <i class="fas fa-stopwatch"></i>
+                    <span>Dhikr Counter</span>
+                </a>
+                <a href="99-names.html" class="menu-item" data-page="names">
+                    <i class="fas fa-star-and-crescent"></i>
+                    <span>99 Names of Allah</span>
+                </a>
+                <a href="nearby-mosques.html" class="menu-item" data-page="mosques">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Nearby Mosques</span>
+                </a>
+                <a href="islamic-calendar.html" class="menu-item" data-page="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Islamic Calendar</span>
+                </a>
+                <a href="qibla.html" class="menu-item" data-page="qibla">
+                    <i class="fas fa-compass"></i>
+                    <span>Qibla Direction</span>
+                </a>
+                <a href="settings.html" class="menu-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+
+                <a href="login.html" class="menu-item" id="authMenuItem">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span id="authText">Login</span>
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Drawer Overlay -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+
+        <header class="header">
+            <div class="header-left">
+                <button class="hamburger-menu" id="hamburgerMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="title">
+                    <img src="images/icon.png" width="40" height="40" >
+                    <span id="app-title">Prayer Times</span>
+                </h1>
+            </div>
+            <div class="controls">
+                <div class="location-picker">
+                    <div class="location-input-container">
+                        <input type="text" id="locationInput" class="location-input" placeholder="Enter city name">
+                        <div class="suggestions-container" id="suggestionsContainer"></div>
+                    </div>
+                    <button id="searchBtn" class="btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button id="locationBtn" class="btn">
+                        <i class="fas fa-location-arrow"></i>
+                    </button>
+                </div>
+                <button id="notificationToggleBtn" class="notification-toggle">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="langToggle" class="lang-toggle">
+                    <span id="lang-text">বাংলা</span>
+                </button>
+                
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div id="notificationBanner" class="notification-permission" style="display: none;">
+                <p id="notification-message">Enable notifications to get prayer reminders</p>
+                <button id="enableNotifications" class="btn" style="margin-top: 10px;">
+                    <i class="fas fa-bell"></i>
+                    <span id="enable-notifications-text">Enable Notifications</span>
+                </button>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-info">
+                    <div class="current-time" id="currentTime">Loading...</div>
+                    <div class="next-prayer" id="nextPrayer">Loading...</div>
+                </div>
+                <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <!-- NEW ELEMENT FOR LOCATION CURRENT TIME -->
+            <div class="location-current-time" id="locationCurrentTime"></div>
+        </div>
+
+            <div id="loadingState" class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p id="loading-text">Loading prayer times...</p>
+            </div>
+
+            <div id="errorState" class="error" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p id="error-message">Unable to load prayer times. Please try again.</p>
+            </div>
+
+            <div id="prayerGrid" class="prayer-grid" style="display: none;"></div>
+
+            <div id="hijriDate" class="hijri-date" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Data Conflict Modal -->
+    <div id="dataConflictModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 id="data-conflict-title">Data Conflict Detected</h2>
+            <p id="data-conflict-message">You have local data from guest usage and existing data in your account. How would you like to proceed?</p>
+            <div class="modal-actions">
+                <button id="useLocalData" class="btn btn-local">Use Local Data</button>
+                <button id="useCloudData" class="btn btn-cloud">Use Cloud Data</button>
+                <button id="mergeData" class="btn btn-merge">Smart Merge</button>
+            </div>
+        </div>
+    </div>
+    <script src="/js/storage-safeguard.js"></script>
+    <script src="/js/shared.js"></script>
+    <script src="/js/onesignal-config.js"></script>
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/auth-context.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/data-sync.js"></script>
+    <script src="js/realtime-sync.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script>
+        // Service Worker is now handled by OneSignal (OneSignalSDKWorker.js)
+        // All custom prayer notification functionality has been integrated
+        console.log('Service worker registration handled by OneSignal - OneSignalSDKWorker.js');
+
+        // Auth state change listener
+        // Auth state change listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const authMenuItem = document.getElementById('authMenuItem');
+            const authText = document.getElementById('authText');
+
+            if (authMenuItem && authText && window.setupAuthObserver && window.logoutUser) {
+                window.setupAuthObserver((user) => {
+                    if (user) {
+                        // User is logged in
+                        authText.textContent = 'Logout';
+                        authMenuItem.href = '#'; // Prevent navigation for logout
+                        authMenuItem.removeEventListener('click', handleAuthClick);
+                        authMenuItem.addEventListener('click', handleAuthClick);
+                    } else {
+                        // User is logged out
+                        authText.textContent = 'Login';
+                        authMenuItem.href = 'login.html';
+                        authMenuItem.removeEventListener('click', handleAuthClick);
+                    }
+                });
+
+                const handleAuthClick = async (event) => {
+                    if (authText.textContent === 'Logout') {
+                        event.preventDefault(); // Prevent default link behavior
+                        const result = await window.logoutUser();
+                        if (result.success) {
+                            // Force page reload to ensure clean state for next user
+                            console.log('Logout successful, reloading page for privacy...');
+                            window.location.href = window.location.pathname + '?logged_out=true'; 
+                        } else {
+                            console.error('Logout failed:', result.error);
+                            alert('Logout failed. Please try again.');
+                        }
+                    }
+                };
+            }
+        });
+    </script>
+</body>
+</html> 

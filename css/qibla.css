@@ -1,0 +1,493 @@
+
+
+/* Qibla Page Specific Styles */
+.qibla-container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Added padding to body for mobile optimization */
+@media (max-width: 768px) {
+    body {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+.location-info {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    position: relative; /* For shining effect */
+    overflow: hidden; /* For shining effect */
+}
+
+.location-info:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow), var(--glow);
+}
+
+.location-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.location-info:hover::before {
+    left: 100%;
+}
+
+.location-info h2 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: var(--accent);
+}
+
+.location-info p {
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+/* Compass Styles */
+.compass-container {
+    margin: 30px auto; /* Center the container */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    perspective: 1000px; /* For 3D effects */
+}
+
+.compass {
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    position: relative;
+    background: radial-gradient(circle at 50% 50%, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    box-shadow: 
+        inset 0 0 15px rgba(0,0,0,0.5), /* Inner shadow for depth */
+        0 0 0 5px var(--border), /* Outer ring */
+        0 0 0 8px var(--bg-secondary), /* Second outer ring */
+        0 10px 20px rgba(0,0,0,0.4), /* Drop shadow */
+        var(--glow); /* Added glowing effect */
+    border: 3px solid var(--border);
+    overflow: hidden; /* Ensure content stays within bounds */
+    transform-style: preserve-3d; /* For 3D rotation */
+}
+
+.compass::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 100%);
+    z-index: 1; /* Below glass, above face */
+    pointer-events: none;
+}
+
+.compass-face {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 50%;
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    background: radial-gradient(circle at 50% 50%, var(--bg-secondary) 0%, var(--bg-card) 100%); /* Lighter background for the dial */
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2); /* Inner shadow for dial */
+    z-index: 0; /* Below needle and glass */
+}
+
+/* Glass effect */
+.compass::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%); /* Reduced opacity */
+    box-shadow: inset 0 0 5px rgba(255,255,255,0.2); /* Reduced opacity and blur */
+    z-index: 2; /* Above everything */
+    pointer-events: none;
+}
+
+.direction {
+    position: absolute;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.direction.north {
+    top: 15px; /* Adjusted for better spacing */
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--danger); /* Red for North */
+}
+
+.direction.east {
+    right: 15px; /* Adjusted for better spacing */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.direction.south {
+    bottom: 15px; /* Adjusted for better spacing */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.direction.west {
+    left: 15px; /* Adjusted for better spacing */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.direction.ne {
+    top: 55px; /* Adjusted for better spacing */
+    right: 55px; /* Adjusted for better spacing */
+}
+.direction.se {
+    bottom: 55px; /* Adjusted for better spacing */
+    right: 55px; /* Adjusted for better spacing */
+}
+
+.direction.sw {
+    bottom: 55px; /* Adjusted for better spacing */
+    left: 55px; /* Adjusted for better spacing */
+}
+.direction.nw {
+    top: 55px; /* Adjusted for better spacing */
+    left: 55px; /* Adjusted for better spacing */
+}
+
+/* Realistic Needle */
+.needle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the needle */
+    width: 0;
+    height: 0;
+    z-index: 10;
+    pointer-events: none; /* Allow clicks to pass through */
+}
+
+.needle-north, .needle-south {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    transform-origin: bottom center;
+}
+
+.needle-north {
+    top: -100px; /* Position above center */
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 100px solid var(--danger); /* Red tip */
+}
+
+.needle-south {
+    bottom: -100px; /* Position below center */
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 100px solid var(--text-primary); /* White/silver tail */
+}
+
+
+/* Central Qibla Indicator */
+.qibla-pointer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 140px; /* Increased height */
+    margin-left: -10px;
+    margin-top: -140px; /* height */
+    transform-origin: bottom center;
+    transition: transform 0.3s ease;
+    z-index: 20; /* Above compass face */
+}
+
+.qibla-pointer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid var(--success);
+}
+
+/* Tick Marks */
+.tick {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px; /* Slightly wider */
+    height: 15px; /* Longer */
+    background-color: var(--text-secondary);
+    transform-origin: 50% 100%; /* Rotate around its bottom center */
+    border-radius: 1px; /* Slightly rounded ends */
+    margin-left: -1px; /* Center the tick horizontally */
+}
+
+.tick.major {
+    width: 4px; /* Even wider */
+    height: 25px; /* Significantly longer */
+    background-color: var(--text-primary);
+    border-radius: 2px; /* More rounded ends */
+    margin-left: -2px; /* Center the major tick horizontally */
+}
+
+
+/* Info Cards */
+.qibla-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.info-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    position: relative; /* For shining effect */
+    overflow: hidden; /* For shining effect */
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow), var(--glow);
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.info-card:hover::before {
+    left: 100%;
+}
+
+.info-card i {
+    font-size: 1.5rem;
+    color: var(--accent);
+    width: 30px;
+    text-align: center;
+}
+
+.info-card h3 {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.info-card p {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+}
+
+.calibration-notice {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    text-align: left;
+}
+
+.calibration-notice i {
+    color: var(--accent);
+    margin-top: 2px;
+}
+
+.calibration-notice p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.status-message {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    display: none;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid var(--border);
+}
+
+.status-message.loading {
+    background: var(--accent);
+    color: white;
+}
+
+.status-message.ready {
+    background: var(--success);
+    color: white;
+}
+
+.calibrate-btn{
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+    margin-top: 20px;
+}
+
+
+
+.calibrate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.calibrate-btn:active {
+    transform: translateY(0);
+}
+
+.accuracy-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-left: 5px;
+}
+
+.accuracy-high { background: #28a745; }
+.accuracy-medium { background: #ffc107; }
+.accuracy-low { background: #dc3545; }
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .compass {
+        width: 280px;
+        height: 280px;
+    }
+    
+    .needle-north {
+        top: -90px; /* Adjusted for 280px compass */
+        border-bottom: 90px solid var(--danger);
+    }
+    
+    .needle-south {
+        bottom: -90px; /* Adjusted for 280px compass */
+        border-top: 90px solid var(--text-primary);
+    }
+    
+    .qibla-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-card {
+        flex-direction: row;
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .compass {
+        width: 220px;
+        height: 220px;
+    }
+    .needle-north {
+        top: -70px; /* Adjusted for 220px compass */
+        border-bottom: 70px solid var(--danger);
+    }
+    .needle-south {
+        bottom: -70px; /* Adjusted for 220px compass */
+        border-top: 70px solid var(--text-primary);
+    }
+    .qibla-pointer {
+        height: 90px;
+        margin-top: -90px;
+    }
+    .qibla-info {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .info-card {
+        padding: 15px;
+    }
+    .calibrate-btn {
+        width: 100%;
+        padding: 15px 0;
+    }
+    .direction {
+        font-size: 0.9rem; /* Smaller font size for directions */
+    }
+    .direction.north {
+        top: 15px;
+    }
+    .direction.east {
+        right: 15px;
+    }
+    .direction.south {
+        bottom: 15px;
+    }
+    .direction.west {
+        left: 15px;
+    }
+    .direction.ne {
+        top: 40px;
+        right: 40px;
+    }
+    .direction.se {
+        bottom: 40px;
+        right: 40px;
+    }
+    .direction.sw {
+        bottom: 40px;
+        left: 40px;
+    }
+    .direction.nw {
+        top: 40px;
+        left: 40px;
+    }
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Firestore Test (v9)</title>
+</head>
+<body>
+    <h1>Firestore Collection Test (v9)</h1>
+    <button id="sendData">Send Data to Firestore</button>
+
+    <script type="module">
+        import '../js/firebase-config.js';
+        import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
+
+        document.getElementById('sendData').addEventListener('click', async () => {
+            try {
+                // Use the globally available db from firebase-config.js
+                const docRef = await addDoc(collection(window.firebaseDb, "testCollection"), {
+                    name: "Test User",
+                    timestamp: new Date().toISOString(),
+                    message: "Hello from Firestore!"
+                });
+                console.log('Document written with ID: ', docRef.id);
+                alert('Data sent! Check Firestore for the new document in testCollection.');
+            } catch (e) {
+                console.error('Error adding document: ', e);
+                alert('Failed to send data. See console for details.');
+            }
+        });
+    </script>
+</body>
+</html>

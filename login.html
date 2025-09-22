@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Prayer Times</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/auth.css">
+    <!-- Firebase CDN Scripts -->
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RBE4169XBF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RBE4169XBF');
+    </script>
+</head>
+<body class="auth-body" data-theme="dark">
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+              
+                    <img src="images/icon.png" width="60" height="60" >
+                
+                <h1 class="auth-title">Prayer Times</h1>
+                
+            </div>
+
+            <form class="auth-form" id="loginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe" class="checkbox-input">
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-text">Remember me</span>
+                    </label>
+                </div>
+
+                <div id="authMessage" class="auth-message"></div>
+
+                <button type="submit" class="auth-btn">Sign In</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="signup.html" class="auth-link">Create Account</a>
+                <a href="forgot-password.html" class="auth-link">Forgot Password?</a>
+            </div>
+
+            
+
+            <div class="guest-option">
+                <p style="margin-bottom: 10px; color: var(--text-secondary);">Just want to explore?</p>
+                <button class="guest-btn">Continue as Guest</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/firebase-config.js"></script>
+    <script src="js/shared.js"></script>
+    <script type="module" src="js/auth-context.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/data-sync.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    const authMessage = document.getElementById('authMessage');
+                    const loginBtn = loginForm.querySelector('button[type="submit"]');
+
+                    if (loginBtn) {
+                        loginBtn.disabled = true;
+                        loginBtn.textContent = 'Logging in...';
+                    }
+                    if (authMessage) {
+                        authMessage.textContent = '';
+                        authMessage.className = 'auth-message';
+                    }
+
+                    // Assuming loginUser is available globally or imported correctly
+                    const rememberMe = document.getElementById('rememberMe').checked;
+                    const result = await window.loginUser(email, password, rememberMe); // Use window.loginUser
+                    if (result.success) {
+                        if (authMessage) {
+                            authMessage.textContent = 'Login successful! Redirecting...';
+                            authMessage.classList.add('success');
+                        }
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1500);
+                    } else {
+                        if (authMessage) {
+                            authMessage.textContent = result.error;
+                            authMessage.classList.add('error');
+                        }
+                        if (loginBtn) {
+                            loginBtn.disabled = false;
+                            loginBtn.textContent = 'Sign In';
+                        }
+                    }
+                });
+            }
+
+            // Theme toggle for auth pages
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.prayerTimesApp) {
+                themeToggle.addEventListener('click', () => {
+                    window.prayerTimesApp.toggleTheme();
+                });
+                // Apply initial theme
+                window.prayerTimesApp.applyTheme();
+            }
+
+            // Handle Continue as Guest button
+            const guestButton = document.querySelector('.guest-btn');
+            if (guestButton) {
+                guestButton.addEventListener('click', () => {
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Islamic Calendar</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/islamic-calendar.css">
+    <link rel="icon" type="image/png" href="/images/icon.png">
+    <!-- Firebase CDN Scripts -->
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RBE4169XBF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RBE4169XBF');
+    </script>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <!-- Side Drawer -->
+        <nav class="side-drawer" id="sideDrawer">
+            <div class="drawer-header">
+                <h2>
+                    <img src="images/icon.png" width="28" height="28" >
+                    <span data-en="Islamic Tools" data-bn="ইসলামিক সরঞ্জাম">Islamic Tools</span>
+                </h2>
+                <button class="close-drawer" id="closeDrawer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="drawer-menu">
+                <a href="index.html" class="menu-item" data-page="home">
+                    <i class="fas fa-home"></i>
+                    <span data-en="Prayer Times" data-bn="নামাজের সময়">Prayer Times</span>
+                </a>
+                <a href="prayer-tracker.html" class="menu-item" data-page="tracker">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span data-en="Prayer Tracker" data-bn="নামাজ ট্র্যাকার">Prayer Tracker</span>
+                </a>
+                <a href="dhikr-counter.html" class="menu-item" data-page="dhikr">
+                    <i class="fas fa-stopwatch"></i>
+                    <span data-en="Dhikr Counter" data-bn="যিকির কাউন্টার">Dhikr Counter</span>
+                </a>
+                <a href="99-names.html" class="menu-item" data-page="names">
+                    <i class="fas fa-star-and-crescent"></i>
+                    <span data-en="99 Names of Allah" data-bn="আল্লাহর ৯৯ নাম">99 Names of Allah</span>
+                </a>
+                <a href="nearby-mosques.html" class="menu-item" data-page="mosques">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span data-en="Nearby Mosques" data-bn="কাছাকাছি মসজিদ">Nearby Mosques</span>
+                </a>
+                <a href="islamic-calendar.html" class="menu-item active" data-page="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span data-en="Islamic Calendar" data-bn="ইসলামিক ক্যালেন্ডার">Islamic Calendar</span>
+                </a>
+                <a href="qibla.html" class="menu-item" data-page="qibla">
+                    <i class="fas fa-compass"></i>
+                    <span data-en="Qibla Direction" data-bn="কিবলা দিকনির্দেশনা">Qibla Direction</span>
+                </a>
+                <a href="settings.html" class="menu-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span data-en="Settings" data-bn="সেটিংস">Settings</span>
+                </a>
+                <a href="login.html" class="menu-item" id="authMenuItem">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span id="authText">Login</span>
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Drawer Overlay -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+
+        <header class="header">
+            <div class="header-left">
+                <button class="hamburger-menu" id="hamburgerMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="title">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="app-title" data-en="Islamic Calendar" data-bn="ইসলামিক ক্যালেন্ডার">Islamic Calendar</span>
+                </h1>
+            </div>
+            <div class="controls">
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="langToggle" class="lang-toggle">
+                    <span id="lang-text">বাংলা</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Current Date Display -->
+            <div class="date-display">
+                <div class="hijri-date-card card">
+                    <h2 id="hijri-date" data-en="Loading..." data-bn="লোড হচ্ছে...">Loading...</h2>
+                    <p id="hijri-day" data-en="Loading..." data-bn="লোড হচ্ছে...">Loading...</p>
+                    <div class="moon-phase card" id="moonPhase">
+                        <i class="fas fa-moon" id="moon-icon"></i>
+                        <span id="moon-phase-text" data-en="New Moon" data-bn="নতুন চাঁদ">New Moon</span>
+                        <span id="moon-age"></span> <!-- Added this line -->
+                    </div>
+                </div>
+                <div class="gregorian-date-card card">
+                    <h3 id="gregorian-date" data-en="Loading..." data-bn="লোড হচ্ছে...">Loading...</h3>
+                    <p id="gregorian-day" data-en="Loading..." data-bn="লোড হচ্ছে...">Loading...</p>
+                    <div id="next-event-countdown" class="countdown-display"></div>
+                </div>
+            </div>
+
+           
+
+            <!-- Calendar View Controls -->
+            <div class="calendar-controls card">
+                <div class="view-controls">
+                    <button id="monthViewBtn" class="btn view-btn active">
+                        <i class="fas fa-calendar"></i>
+                        <span data-en="Month View" data-bn="মাসিক দৃশ্য">Month View</span>
+                    </button>
+                    <button id="eventsViewBtn" class="btn view-btn">
+                        <i class="fas fa-list"></i>
+                        <span data-en="Events View" data-bn="ইভেন্ট দৃশ্য">Events View</span>
+                    </button>
+                    <button id="todayBtn" class="btn view-btn">
+                        <i class="fas fa-calendar-day"></i>
+                        <span data-en="Today" data-bn="আজ">Today</span>
+                    </button>
+                    <button id="exportBtn" class="btn view-btn">
+                        <i class="fas fa-download"></i>
+                        <span data-en="Export" data-bn="রপ্তানি">Export</span>
+                    </button>
+                </div>
+            </div>
+
+            
+             <!-- Navigation -->
+            <div class="calendar-nav card">
+                <button id="prevMonth" class="btn nav-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="hijri-selected-date">
+                    <span id="selected-hijri-day"></span>
+                    <span id="selected-hijri-date"></span>
+                </div>
+                <div class="current-month">
+                    <h3 id="current-hijri-month">Muharram 1447</h3>
+                    <p id="selected-hijri-day-mobile" class="mobile-only-selected-day"></p>
+                    <p id="current-gregorian-month">August 2025</p>
+                </div>
+                <div class="gregorian-selected-date">
+                    <span id="selected-gregorian-day"></span>
+                    <span id="selected-gregorian-date"></span>
+                </div>
+                <button id="nextMonth" class="btn nav-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="calendar-grid card" id="calendarGrid">
+                <!-- Calendar will be generated here -->
+            </div>
+
+            <!-- Islamic Events Section -->
+            <div class="events-section card">
+                <div class="events-header">
+                    <h3>
+                        <i class="fas fa-star"></i>
+                        <span id="events-title" data-en="Upcoming Islamic Events" data-bn="আসন্ন ইসলামিক ইভেন্ট">Upcoming Islamic Events</span>
+                    </h3>
+                    <div class="events-search">
+                        <input type="text" id="eventSearch" placeholder="Search events..." class="event-search-input" data-en-placeholder="Search events..." data-bn-placeholder="ইভেন্ট অনুসন্ধান করুন...">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                </div>
+                <div class="events-list" id="eventsList">
+                    <!-- Events will be generated here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions card">
+                <div class="stat-card card" id="quickTodayBtn"> 
+                
+                    <i class="fas fa-calendar-day"></i>
+                    <span data-en="Today" data-bn="আজ">Today</span>
+                </div>
+                <div class="stat-card card" id="ramadanBtn">
+                    <i class="fas fa-crescent-moon"></i>
+                    <span data-en="Ramadan" data-bn="রমজান">Ramadan</span>
+                </div>
+                <div class="stat-card card" id="hajjBtn">
+                    <i class="fas fa-kaaba"></i>
+                    <span data-en="Hajj Dates" data-bn="হজ্বের তারিখ">Hajj Dates</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="modalEventTitle"></h3>
+            <p id="modalEventDescription"></p>
+            <p id="modalEventSignificance"></p>
+        </div>
+    </div>
+
+    <script src="/js/shared.js"></script>
+    <script type="module" src="/js/firebase-config.js"></script>
+    <script type="module" src="/js/auth.js"></script>
+    <script type="module" src="/js/data-sync.js"></script>
+    <script src="/js/realtime-sync.js"></script>
+    <script src="js/islamic-calendar.js"></script>
+    <script>
+        // Auth state change listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const authMenuItem = document.getElementById('authMenuItem');
+            const authText = document.getElementById('authText');
+
+            if (authMenuItem && authText && window.setupAuthObserver && window.logoutUser) {
+                window.setupAuthObserver((user) => {
+                    if (user) {
+                        // User is logged in
+                        authText.textContent = 'Logout';
+                        authMenuItem.href = '#'; // Prevent navigation for logout
+                        authMenuItem.removeEventListener('click', handleAuthClick);
+                        authMenuItem.addEventListener('click', handleAuthClick);
+                    } else {
+                        // User is logged out
+                        authText.textContent = 'Login';
+                        authMenuItem.href = 'login.html';
+                        authMenuItem.removeEventListener('click', handleAuthClick);
+                    }
+                });
+
+                const handleAuthClick = async (event) => {
+                    if (authText.textContent === 'Logout') {
+                        event.preventDefault(); // Prevent default link behavior
+                        const result = await window.logoutUser();
+                        if (result.success) {
+                            // Optionally, redirect to login page or home page after logout
+                            window.location.href = 'login.html'; 
+                        } else {
+                            console.error('Logout failed:', result.error);
+                            alert('Logout failed. Please try again.');
+                        }
+                    }
+                };
+            }
+        });
+    </script>
+</body>
+</html>

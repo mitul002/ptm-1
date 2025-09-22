@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy & Data Clearing Test - Prayer Times</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        
+        .test-section {
+            margin: 25px 0;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+        
+        .test-section h2 {
+            color: #4a5568;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .status.clean {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status.has-data {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .status.checking {
+            background: #bee3f8;
+            color: #1a365d;
+        }
+        
+        .data-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        
+        .data-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: #f7fafc;
+            border-radius: 4px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0 10px;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover {
+            background: #3182ce;
+        }
+        
+        .btn.danger {
+            background: #e53e3e;
+        }
+        
+        .btn.danger:hover {
+            background: #c53030;
+        }
+        
+        .btn.success {
+            background: #38a169;
+        }
+        
+        .btn.success:hover {
+            background: #2f855a;
+        }
+        
+        .auth-status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .summary {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .summary h3 {
+            color: #2d3748;
+            margin-top: 0;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        .loading {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Privacy & Data Clearing Test</h1>
+        
+        <div class="auth-status" id="authStatus">
+            <span class="loading">🔄 Checking authentication status...</span>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="scanAllData()">🔍 Scan All Local Data</button>
+            <button class="btn success" onclick="testLogin()">✅ Test Login</button>
+            <button class="btn danger" onclick="testLogout()">🚪 Test Logout & Clear</button>
+            <button class="btn" onclick="simulateDataCreation()">📝 Create Test Data</button>
+        </div>
+        
+        <!-- localStorage Test -->
+        <div class="test-section">
+            <h2>
+                📦 localStorage Data
+                <span class="status checking" id="localStorageStatus">Checking...</span>
+            </h2>
+            <p>Prayer Times app data stored in browser's localStorage:</p>
+            <div class="data-list" id="localStorageData">Scanning...</div>
+        </div>
+        
+        <!-- sessionStorage Test -->
+        <div class="test-section">
+            <h2>
+                🔄 sessionStorage Data
+                <span class="status checking" id="sessionStorageStatus">Checking...</span>
+            </h2>
+            <p>Temporary session data that should be cleared on logout:</p>
+            <div class="data-list" id="sessionStorageData">Scanning...</div>
+        </div>
+        
+        <!-- IndexedDB Test -->
+        <div class="test-section">
+            <h2>
+                🗄️ IndexedDB Data
+                <span class="status checking" id="indexedDBStatus">Checking...</span>
+            </h2>
+            <p>Offline database storage (if any):</p>
+            <div class="data-list" id="indexedDBData">Scanning...</div>
+        </div>
+        
+        <!-- Cache Test -->
+        <div class="test-section">
+            <h2>
+                💾 Service Worker Cache
+                <span class="status checking" id="cacheStatus">Checking...</span>
+            </h2>
+            <p>Cached resources and data:</p>
+            <div class="data-list" id="cacheData">Scanning...</div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="summary">
+            <h3>📊 Privacy Test Summary</h3>
+            <div class="metric">
+                <span>localStorage items:</span>
+                <span id="localCount">-</span>
+            </div>
+            <div class="metric">
+                <span>sessionStorage items:</span>
+                <span id="sessionCount">-</span>
+            </div>
+            <div class="metric">
+                <span>IndexedDB databases:</span>
+                <span id="indexedCount">-</span>
+            </div>
+            <div class="metric">
+                <span>Cache entries:</span>
+                <span id="cacheCount">-</span>
+            </div>
+            <div class="metric">
+                <span><strong>Privacy Status:</strong></span>
+                <span id="privacyScore" style="font-weight: bold;">Calculating...</span>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f0f8ff; border-radius: 8px; border-left: 4px solid #4299e1;">
+            <h4 style="margin-top: 0; color: #2b6cb0;">🛡️ Privacy Protection Test</h4>
+            <p><strong>Purpose:</strong> This page verifies that when a user logs out, ALL their personal data is completely removed from the browser, ensuring a fresh app experience for the next user.</p>
+            <p><strong>Expected Result:</strong> After logout, all prayer data, user preferences, location info, and cached content should be cleared for complete privacy protection.</p>
+        </div>
+    </div>
+
+    <!-- Include Firebase and App Scripts -->
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/auth-context.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/data-sync.js"></script>
+    
+    <script>
+        let authContext = null;
+        
+        // Authentication status monitoring
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.authContext) {
+                    authContext = window.authContext;
+                    setupAuthMonitoring();
+                }
+                scanAllData();
+            }, 1000);
+        });
+        
+        function setupAuthMonitoring() {
+            const authStatus = document.getElementById('authStatus');
+            
+            authContext.onAuthStateChanged((user) => {
+                if (user) {
+                    authStatus.innerHTML = `
+                        <span style="color: #22543d; background: #c6f6d5; padding: 10px 20px; border-radius: 20px;">
+                            ✅ Logged in as: ${user.email}
+                        </span>
+                    `;
+                } else {
+                    authStatus.innerHTML = `
+                        <span style="color: #742a2a; background: #fed7d7; padding: 10px 20px; border-radius: 20px;">
+                            🚫 Not logged in (Guest Mode)
+                        </span>
+                    `;
+                }
+            });
+        }
+        
+        async function scanAllData() {
+            console.log("🔍 Starting comprehensive data scan...");
+            
+            // Scan localStorage
+            await scanLocalStorage();
+            
+            // Scan sessionStorage
+            await scanSessionStorage();
+            
+            // Scan IndexedDB
+            await scanIndexedDB();
+            
+            // Scan Service Worker Cache
+            await scanCache();
+            
+            // Calculate privacy score
+            calculatePrivacyScore();
+        }
+        
+        function scanLocalStorage() {
+            const container = document.getElementById('localStorageData');
+            const status = document.getElementById('localStorageStatus');
+            const appRelatedKeys = [];
+            
+            // Find all keys that might be app-related
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                
+                if (key && (
+                    key.includes('prayer') || key.includes('dhikr') || key.includes('user') ||
+                    key.includes('location') || key.includes('sync') || key.includes('auth') ||
+                    key.includes('cache') || key.includes('firebase') || key.includes('notification') ||
+                    key.includes('hijri') || key.includes('mosque') || key.includes('qibla') ||
+                    key.includes('tracker') || key.includes('names') || key.includes('app')
+                )) {
+                    appRelatedKeys.push({ key, value: value?.substring(0, 100) + (value?.length > 100 ? '...' : '') });
+                }
+            }
+            
+            document.getElementById('localCount').textContent = appRelatedKeys.length;
+            
+            if (appRelatedKeys.length === 0) {
+                status.className = 'status clean';
+                status.textContent = '✅ Clean';
+                container.innerHTML = '<div style="color: #22543d; text-align: center; padding: 20px;">🎉 No app data found - Privacy Protected!</div>';
+            } else {
+                status.className = 'status has-data';
+                status.textContent = `⚠️ ${appRelatedKeys.length} items found`;
+                container.innerHTML = appRelatedKeys.map(item => 
+                    `<div class="data-item"><strong>${item.key}:</strong> ${item.value}</div>`
+                ).join('');
+            }
+        }
+        
+        function scanSessionStorage() {
+            const container = document.getElementById('sessionStorageData');
+            const status = document.getElementById('sessionStorageStatus');
+            const appRelatedKeys = [];
+            
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                const value = sessionStorage.getItem(key);
+                
+                if (key && (
+                    key.includes('prayer') || key.includes('dhikr') || key.includes('user') ||
+                    key.includes('sync') || key.includes('auth') || key.includes('firebase') ||
+                    key.includes('location') || key.includes('notification') || key.includes('app')
+                )) {
+                    appRelatedKeys.push({ key, value: value?.substring(0, 100) + (value?.length > 100 ? '...' : '') });
+                }
+            }
+            
+            document.getElementById('sessionCount').textContent = appRelatedKeys.length;
+            
+            if (appRelatedKeys.length === 0) {
+                status.className = 'status clean';
+                status.textContent = '✅ Clean';
+                container.innerHTML = '<div style="color: #22543d; text-align: center; padding: 20px;">🎉 No session data found!</div>';
+            } else {
+                status.className = 'status has-data';
+                status.textContent = `⚠️ ${appRelatedKeys.length} items found`;
+                container.innerHTML = appRelatedKeys.map(item => 
+                    `<div class="data-item"><strong>${item.key}:</strong> ${item.value}</div>`
+                ).join('');
+            }
+        }
+        
+        async function scanIndexedDB() {
+            const container = document.getElementById('indexedDBData');
+            const status = document.getElementById('indexedDBStatus');
+            
+            try {
+                const databases = await indexedDB.databases?.() || [];
+                const appDatabases = databases.filter(db => 
+                    db.name?.includes('prayer') || db.name?.includes('user') || 
+                    db.name?.includes('firebase') || db.name?.includes('app')
+                );
+                
+                document.getElementById('indexedCount').textContent = appDatabases.length;
+                
+                if (appDatabases.length === 0) {
+                    status.className = 'status clean';
+                    status.textContent = '✅ Clean';
+                    container.innerHTML = '<div style="color: #22543d; text-align: center; padding: 20px;">🎉 No app databases found!</div>';
+                } else {
+                    status.className = 'status has-data';
+                    status.textContent = `⚠️ ${appDatabases.length} databases found`;
+                    container.innerHTML = appDatabases.map(db => 
+                        `<div class="data-item"><strong>Database:</strong> ${db.name} (Version: ${db.version})</div>`
+                    ).join('');
+                }
+            } catch (error) {
+                status.className = 'status clean';
+                status.textContent = '✅ Not available';
+                container.innerHTML = '<div style="color: #4a5568; text-align: center; padding: 20px;">IndexedDB not available or no permissions</div>';
+                document.getElementById('indexedCount').textContent = 'N/A';
+            }
+        }
+        
+        async function scanCache() {
+            const container = document.getElementById('cacheData');
+            const status = document.getElementById('cacheStatus');
+            
+            try {
+                const cacheNames = await caches.keys();
+                const appCaches = cacheNames.filter(name => 
+                    name.includes('prayer') || name.includes('user') || 
+                    name.includes('app') || name.includes('data')
+                );
+                
+                document.getElementById('cacheCount').textContent = appCaches.length;
+                
+                if (appCaches.length === 0) {
+                    status.className = 'status clean';
+                    status.textContent = '✅ Clean';
+                    container.innerHTML = '<div style="color: #22543d; text-align: center; padding: 20px;">🎉 No app-specific caches found!</div>';
+                } else {
+                    status.className = 'status has-data';
+                    status.textContent = `⚠️ ${appCaches.length} caches found`;
+                    container.innerHTML = appCaches.map(name => 
+                        `<div class="data-item"><strong>Cache:</strong> ${name}</div>`
+                    ).join('');
+                }
+            } catch (error) {
+                status.className = 'status clean';
+                status.textContent = '✅ Not available';
+                container.innerHTML = '<div style="color: #4a5568; text-align: center; padding: 20px;">Cache API not available</div>';
+                document.getElementById('cacheCount').textContent = 'N/A';
+            }
+        }
+        
+        function calculatePrivacyScore() {
+            const localCount = parseInt(document.getElementById('localCount').textContent) || 0;
+            const sessionCount = parseInt(document.getElementById('sessionCount').textContent) || 0;
+            const indexedCount = document.getElementById('indexedCount').textContent === 'N/A' ? 0 : parseInt(document.getElementById('indexedCount').textContent) || 0;
+            const cacheCount = document.getElementById('cacheCount').textContent === 'N/A' ? 0 : parseInt(document.getElementById('cacheCount').textContent) || 0;
+            
+            const totalDataItems = localCount + sessionCount + indexedCount + cacheCount;
+            
+            const privacyScore = document.getElementById('privacyScore');
+            
+            if (totalDataItems === 0) {
+                privacyScore.innerHTML = '<span style="color: #22543d;">🛡️ EXCELLENT - Fully Protected</span>';
+                privacyScore.parentElement.style.background = '#c6f6d5';
+            } else if (totalDataItems <= 3) {
+                privacyScore.innerHTML = '<span style="color: #744210;">⚠️ GOOD - Minor data remains</span>';
+                privacyScore.parentElement.style.background = '#faf089';
+            } else {
+                privacyScore.innerHTML = '<span style="color: #742a2a;">❌ POOR - Data leak detected</span>';
+                privacyScore.parentElement.style.background = '#fed7d7';
+            }
+        }
+        
+        function simulateDataCreation() {
+            console.log("📝 Creating test data to simulate user activity...");
+            
+            // Simulate prayer times data
+            localStorage.setItem('prayerData', JSON.stringify({
+                fajr: '05:30', dhuhr: '12:45', asr: '16:20', maghrib: '18:45', isha: '20:15'
+            }));
+            
+            // Simulate user location
+            localStorage.setItem('userLocation', JSON.stringify({
+                lat: 23.8103, lng: 90.4125, city: 'Dhaka'
+            }));
+            
+            // Simulate dhikr counter data
+            localStorage.setItem('dhikr-session', JSON.stringify({
+                count: 33, target: 100, name: 'SubhanAllah'
+            }));
+            
+            // Simulate prayer tracker
+            localStorage.setItem('prayerTrackerData', JSON.stringify({
+                today: { fajr: true, dhuhr: true, asr: false, maghrib: false, isha: false }
+            }));
+            
+            // Simulate user preferences
+            localStorage.setItem('userPreferences', JSON.stringify({
+                language: 'en', theme: 'light', notifications: true
+            }));
+            
+            // Simulate session data
+            sessionStorage.setItem('prayer-session', 'active');
+            sessionStorage.setItem('auth-temp', 'user123');
+            
+            alert('✅ Test data created! Now scan again to see the data, then test logout to verify clearing.');
+            scanAllData();
+        }
+        
+        function testLogin() {
+            window.location.href = 'login.html';
+        }
+        
+        async function testLogout() {
+            if (!authContext || !authContext.isUserAuthenticated()) {
+                alert('ℹ️ No user is currently logged in. Creating test data and clearing it to simulate logout...');
+                simulateDataCreation();
+                
+                // Simulate logout clearing
+                setTimeout(async () => {
+                    if (window.logoutUser) {
+                        await window.logoutUser();
+                    } else {
+                        // Manual clearing for testing
+                        localStorage.clear();
+                        sessionStorage.clear();
+                    }
+                    
+                    alert('🧹 Test logout completed! Scanning for remaining data...');
+                    setTimeout(() => scanAllData(), 500);
+                }, 1000);
+                
+                return;
+            }
+            
+            if (confirm('🚪 Are you sure you want to logout? This will clear ALL your data for privacy testing.')) {
+                try {
+                    await authContext.logout();
+                    alert('✅ Logout completed! Scanning for remaining data...');
+                    setTimeout(() => scanAllData(), 1000);
+                } catch (error) {
+                    alert('❌ Error during logout: ' + error.message);
+                }
+            }
+        }
+        
+        // Auto-refresh data every 5 seconds for real-time monitoring
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                scanAllData();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

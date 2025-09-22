@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .status-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .status-value {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .logged-in {
+            background: #d4edda;
+            color: #155724;
+        }
+        .logged-out {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .test-buttons {
+            margin: 20px 0;
+        }
+        .test-buttons button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .test-buttons button:hover {
+            background: #0056b3;
+        }
+        .logs {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Authentication State Test</h1>
+        <p>This page tests Firebase authentication persistence across tabs and sessions.</p>
+        
+        <div class="status-card">
+            <h3>Current Authentication State</h3>
+            <p>User: <span class="status-value" id="auth-user">Checking...</span></p>
+            <p>Status: <span class="status-value" id="auth-status">Checking...</span></p>
+            <p>Persistence: <span class="status-value" id="auth-persistence">Checking...</span></p>
+            <p>Firebase Ready: <span class="status-value" id="firebase-ready">Checking...</span></p>
+        </div>
+
+        <div class="test-buttons">
+            <button onclick="testLogin()">Go to Login Page</button>
+            <button onclick="testSettings()">Go to Settings Page</button>
+            <button onclick="testRefresh()">Refresh Page</button>
+            <button onclick="openInNewTab()">Open in New Tab</button>
+            <button onclick="testLogout()">Test Logout</button>
+            <button onclick="clearLogs()">Clear Logs</button>
+        </div>
+
+        <div class="logs" id="logs">
+            <div>🚀 Authentication Test Started...</div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/auth-context.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+
+    <script>
+        let logCounter = 0;
+
+        function log(message, type = 'info') {
+            logCounter++;
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('logs');
+            const emoji = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logElement.innerHTML += `<div>[${timestamp}] ${emoji} ${message}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateAuthDisplay(user) {
+            const userElement = document.getElementById('auth-user');
+            const statusElement = document.getElementById('auth-status');
+            
+            if (user) {
+                userElement.textContent = user.email;
+                userElement.className = 'status-value logged-in';
+                statusElement.textContent = 'Logged In';
+                statusElement.className = 'status-value logged-in';
+                log(`User authenticated: ${user.email}`, 'success');
+            } else {
+                userElement.textContent = 'Not logged in';
+                userElement.className = 'status-value logged-out';
+                statusElement.textContent = 'Logged Out';
+                statusElement.className = 'status-value logged-out';
+                log('User not authenticated', 'warning');
+            }
+        }
+
+        function checkFirebaseReady() {
+            const firebaseElement = document.getElementById('firebase-ready');
+            const persistenceElement = document.getElementById('auth-persistence');
+            
+            if (typeof window.firebaseAuth !== 'undefined') {
+                firebaseElement.textContent = 'Ready';
+                firebaseElement.className = 'status-value logged-in';
+                log('Firebase Auth is ready', 'success');
+
+                // Check current persistence
+                if (window.firebaseAuth.currentUser) {
+                    persistenceElement.textContent = 'Local (Persistent)';
+                    persistenceElement.className = 'status-value logged-in';
+                } else {
+                    persistenceElement.textContent = 'Session Only';
+                    persistenceElement.className = 'status-value logged-out';
+                }
+            } else {
+                firebaseElement.textContent = 'Not Ready';
+                firebaseElement.className = 'status-value logged-out';
+                persistenceElement.textContent = 'Unknown';
+                persistenceElement.className = 'status-value logged-out';
+                log('Firebase Auth not ready yet', 'warning');
+                setTimeout(checkFirebaseReady, 500);
+            }
+        }
+
+        function setupAuthListener() {
+            if (window.authContext && window.authContext.onAuthStateChanged) {
+                log('Setting up auth context listener', 'success');
+                window.authContext.onAuthStateChanged(updateAuthDisplay);
+            } else if (window.firebaseAuth && window.firebaseOnAuthStateChanged) {
+                log('Setting up direct Firebase listener', 'warning');
+                window.firebaseOnAuthStateChanged(window.firebaseAuth, updateAuthDisplay);
+            } else {
+                log('Auth listeners not available, retrying...', 'warning');
+                setTimeout(setupAuthListener, 500);
+            }
+        }
+
+        // Test functions
+        function testLogin() {
+            window.open('login.html', '_blank');
+        }
+
+        function testSettings() {
+            window.open('settings.html', '_blank');
+        }
+
+        function testRefresh() {
+            window.location.reload();
+        }
+
+        function openInNewTab() {
+            window.open(window.location.href, '_blank');
+        }
+
+        function testLogout() {
+            if (window.authContext && window.authContext.logout) {
+                log('Testing logout via auth context', 'info');
+                window.authContext.logout();
+            } else if (window.logoutUser) {
+                log('Testing logout via global logout function', 'info');
+                window.logoutUser();
+            } else {
+                log('No logout function available', 'error');
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '<div>🚀 Authentication Test Started...</div>';
+            logCounter = 0;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            log('DOM loaded, initializing auth test', 'info');
+            checkFirebaseReady();
+            setTimeout(setupAuthListener, 1000);
+        });
+
+        // Log visibility changes (tab switching)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                log('Tab became hidden', 'info');
+            } else {
+                log('Tab became visible', 'info');
+                // Re-check auth state when tab becomes visible
+                if (window.firebaseAuth && window.firebaseAuth.currentUser) {
+                    updateAuthDisplay(window.firebaseAuth.currentUser);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

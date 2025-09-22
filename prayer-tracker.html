@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Tracker</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/prayer-tracker.css">
+    <link rel="icon" type="image/png" href="/images/icon.png">
+    <!-- Firebase CDN Scripts -->
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RBE4169XBF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RBE4169XBF');
+    </script>
+
+    <!-- OneSignal Integration -->
+    <script>
+        window.oneSignalLoadStart = Date.now();
+    </script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" onload="console.log('OneSignal script loaded successfully in', Date.now() - window.oneSignalLoadStart, 'ms'); console.log('OneSignal available:', typeof window.OneSignal, window.OneSignal);" onerror="console.error('Failed to load OneSignal script');"></script>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <!-- Side Drawer -->
+        <nav class="side-drawer" id="sideDrawer">
+            <div class="drawer-header">
+                <h2>
+                    <img src="images/icon.png" width="28" height="28" >
+                    <span>Prayer Tracker</span>
+                </h2>
+                <button class="close-drawer" id="closeDrawer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="drawer-menu">
+                <a href="index.html" class="menu-item" data-page="home">
+                    <i class="fas fa-home"></i>
+                    <span>Prayer Times</span>
+                </a>
+                <a href="prayer-tracker.html" class="menu-item active" data-page="tracker">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Prayer Tracker</span>
+                </a>
+                <a href="dhikr-counter.html" class="menu-item" data-page="dhikr">
+                    <i class="fas fa-stopwatch"></i>
+                    <span>Dhikr Counter</span>
+                </a>
+                <a href="99-names.html" class="menu-item" data-page="names">
+                    <i class="fas fa-star-and-crescent"></i>
+                    <span>99 Names of Allah</span>
+                </a>
+                <a href="nearby-mosques.html" class="menu-item" data-page="mosques">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Nearby Mosques</span>
+                </a>
+                <a href="islamic-calendar.html" class="menu-item" data-page="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Islamic Calendar</span>
+                </a>
+                <a href="qibla.html" class="menu-item" data-page="qibla">
+                    <i class="fas fa-compass"></i>
+                    <span>Qibla Direction</span>
+                </a>
+                <a href="settings.html" class="menu-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="login.html" class="menu-item" id="authMenuItem">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span id="authText">Login</span>
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Drawer Overlay -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+
+        <header class="header">
+            <div class="header-left">
+                <button class="hamburger-menu" id="hamburgerMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="title">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span id="app-title">Prayer Tracker</span>
+                </h1>
+            </div>
+            <div class="controls">
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="langToggle" class="lang-toggle">
+                    <span id="lang-text">বাংলা</span>
+                </button>
+                <button id="openSettingsBtn" class="btn theme-toggle">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="tracker-container">
+                <div class="date-navigation">
+                    <button id="prevDay" class="btn"><i class="fas fa-chevron-left"></i></button>
+                    <h2 id="currentDate"></h2>
+                    <button id="nextDay" class="btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+
+                <div id="dailyAnalysisCard" class="daily-analysis-card">
+                    <!-- Daily analysis will be generated by JavaScript -->
+                </div>
+
+                <div id="prayerTrackerGrid" class="prayer-tracker-grid">
+                    <!-- Prayer rows will be generated by JavaScript -->
+                </div>
+
+                
+
+                <div class="analytics-section analytics-card">
+                    <div class="analytics-card-header">
+                        <h3 id="analytics-title">Analytics</h3>
+                    </div>
+                    <div class="analytics-card-content">
+                        <div class="analytics-grid">
+                            <div class="stat-card">
+                                <h4 id="weekly-completion-title">Weekly Completion</h4>
+                                <p id="weeklyCompletion">--%</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4 id="monthly-completion-title">Monthly Completion</h4>
+                                <p id="monthlyCompletion">--%</p>
+                            </div>
+                        </div>
+                        <div class="analytics-details">
+                            <div class="analytics-grid">
+                                <div class="stat-card">
+                                    <h4 id="weekly-missed-title">Weekly Missed</h4>
+                                    <p id="weeklyMissed">--</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4 id="monthly-missed-title">Monthly Missed</h4>
+                                    <p id="monthlyMissed">--</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4 id="weekly-qaza-title">Weekly Qaza</h4>
+                                    <p id="weeklyQaza">--</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4 id="monthly-qaza-title">Monthly Qaza</h4>
+                                    <p id="monthlyQaza">--</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calendar-and-missed-container">
+                    <div id="monthlyCalendar" class="monthly-calendar">
+                        <!-- Calendar will be generated by JavaScript -->
+                    </div>
+                    <div id="missedPrayersSection" class="missed-prayers-section">
+                        <div class="missed-prayers-header">
+                            <h3 id="missed-prayers-title">Missed Prayers</h3>
+                            <button id="sortMissedPrayers" class="sort-button">
+                                <i class="fas fa-sort"></i>
+                            </button>
+                        </div>
+                        <div id="missedPrayersList" class="missed-prayers-list">
+                            <!-- Missed prayer cards will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="settings-title-modal">Settings</h3>
+                <button class="modal-close" id="closeSettingsBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-grid">
+                    <div class="setting-group">
+                        <h4 id="optional-prayers-title">Optional Prayers</h4>
+                        <div id="optionalPrayers" class="prayer-selection">
+                            <!-- Checkboxes will be generated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h4 id="reminders-title-modal">Reminders</h4>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="missedPrayerReminders" >
+                                <span id="enable-reminders-label">Enable reminders for missed prayers</span>
+                            </label>
+                        </div>
+                        <div class="setting-item" id="notificationSoundSettings">
+                            <!-- Notification Sound setting will be generated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h4 id="auto-missed-prayer-marking-title">Auto-missed prayer marking</h4>
+                        <form id="missed-prayer-settings">
+                            <div>
+                                <label>
+                                    <input type="radio" name="missed-prayer-option" value="disabled">
+                                    Disabled
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <input type="radio" name="missed-prayer-option" value="current-day">
+                                    Current Day Only
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <input type="radio" name="missed-prayer-option" value="all-days" checked>
+                                    All Days
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    
+                    <div class="setting-group">
+                        <h4 id="data-management-title">Data Management</h4>
+                        <div class="setting-item">
+                            <div class="data-buttons">
+                                <button id="exportPdf" class="btn"><i class="fas fa-file-pdf"></i> Export to PDF</button>
+                            </div>
+                            <div class="data-buttons">
+                                <button id="backup-data-button" class="btn"><i class="fas fa-download"></i> <span id="backup-data-button-text">Data Backup</span></button>
+                                <button id="restore-data-button" class="btn"><i class="fas fa-upload"></i> <span id="restore-data-button-text">Data Restore</span></button>
+                            </div>
+                            <input type="file" id="restore-file-input" style="display: none;" accept=".json">
+                        </div>
+                        <div class="setting-item">
+                            <button id="resetData" class="btn secondary">Reset Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/shared.js"></script>
+    <script src="/js/onesignal-config.js"></script>
+    <script type="module" src="/js/firebase-config.js"></script>
+    <script type="module" src="/js/auth-context.js"></script>
+    <script type="module" src="/js/auth.js"></script>
+    <script type="module" src="/js/data-sync.js"></script>
+    <script src="/js/realtime-sync.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="/js/prayer-tracker.js"></script>
+    
+    <script>
+        // Auth state change listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const authMenuItem = document.getElementById('authMenuItem');
+            const authText = document.getElementById('authText');
+
+            if (authMenuItem && authText && window.setupAuthObserver && window.logoutUser) {
+                window.setupAuthObserver((user) => {
+                    if (user) {
+                        // User is logged in
+                        authText.textContent = 'Logout';
+                        authMenuItem.href = '#'; // Prevent navigation for logout
+                        authMenuItem.removeEventListener('click', handleAuthClick);
+                        authMenuItem.addEventListener('click', handleAuthClick);
+                    } else {
+                        // User is logged out
+                        authText.textContent = 'Login';
+                        authMenuItem.href = 'login.html';
+                        authMenuItem.removeEventListener('click', handleAuthClick);
+                    }
+                });
+
+                const handleAuthClick = async (event) => {
+                    if (authText.textContent === 'Logout') {
+                        event.preventDefault(); // Prevent default link behavior
+                        const result = await window.logoutUser();
+                        if (result.success) {
+                            // Optionally, redirect to login page or home page after logout
+                            window.location.href = 'login.html'; 
+                        } else {
+                            console.error('Logout failed:', result.error);
+                            alert('Logout failed. Please try again.');
+                        }
+                    }
+                };
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Authentication Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Firebase Authentication Test</h1>
+
+    <div class="test-section">
+        <h3>Firebase Configuration Test</h3>
+        <button onclick="testFirebaseConfig()">Test Firebase Config</button>
+        <div id="configResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Authentication Test</h3>
+        <input type="email" id="testEmail" placeholder="Test email" value="test@example.com">
+        <input type="password" id="testPassword" placeholder="Test password" value="test123">
+        <br>
+        <button onclick="testRegister()">Test Register</button>
+        <button onclick="testLogin()">Test Login</button>
+        <button onclick="testLogout()">Test Logout</button>
+        <div id="authResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Data Synchronization Test</h3>
+        <button onclick="testDataSync()">Test Data Sync</button>
+        <div id="syncResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Analytics Test</h3>
+        <button onclick="testAnalytics()">Test Analytics</button>
+        <div id="analyticsResult"></div>
+    </div>
+
+    <!-- Firebase CDN Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RBE4169XBF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RBE4169XBF');
+    </script>
+
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/data-sync.js"></script>
+
+    <script>
+        function updateResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = isSuccess ? 'success' : 'error';
+        }
+
+        async function testFirebaseConfig() {
+            try {
+                if (typeof window.firebaseAuth !== 'undefined' &&
+                    typeof window.firebaseDb !== 'undefined' &&
+                    typeof window.firebaseAnalytics !== 'undefined') {
+                    updateResult('configResult', '✅ Firebase configuration successful!');
+                } else {
+                    updateResult('configResult', '❌ Firebase configuration failed!', false);
+                }
+            } catch (error) {
+                updateResult('configResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        async function testRegister() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+
+            try {
+                const result = await window.registerUser(email, password);
+                if (result.success) {
+                    updateResult('authResult', `✅ Registration successful for ${email}`);
+                } else {
+                    updateResult('authResult', `❌ Registration failed: ${result.error}`, false);
+                }
+            } catch (error) {
+                updateResult('authResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+
+            try {
+                const result = await window.loginUser(email, password);
+                if (result.success) {
+                    updateResult('authResult', `✅ Login successful for ${email}`);
+                } else {
+                    updateResult('authResult', `❌ Login failed: ${result.error}`, false);
+                }
+            } catch (error) {
+                updateResult('authResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        async function testLogout() {
+            try {
+                const result = await window.logoutUser();
+                if (result.success) {
+                    updateResult('authResult', '✅ Logout successful');
+                } else {
+                    updateResult('authResult', `❌ Logout failed: ${result.error}`, false);
+                }
+            } catch (error) {
+                updateResult('authResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        async function testDataSync() {
+            try {
+                // Test with a dummy user ID for demonstration
+                const testUserId = 'test-user-123';
+                const result = await window.uploadLocalDataToFirebase(testUserId);
+                if (result.success) {
+                    updateResult('syncResult', '✅ Data sync upload successful');
+                } else {
+                    updateResult('syncResult', `❌ Data sync failed: ${result.error}`, false);
+                }
+            } catch (error) {
+                updateResult('syncResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        function testAnalytics() {
+            try {
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'test_event', {
+                        test_parameter: 'test_value'
+                    });
+                    updateResult('analyticsResult', '✅ Analytics event sent successfully');
+                } else {
+                    updateResult('analyticsResult', '❌ Google Analytics not available', false);
+                }
+            } catch (error) {
+                updateResult('analyticsResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        // Auto-test Firebase config on page load
+        window.addEventListener('load', () => {
+            setTimeout(testFirebaseConfig, 1000);
+        });
+    </script>
+</body>
+</html>

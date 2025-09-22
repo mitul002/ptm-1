@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneSignal Integration Test Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .warning {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        #console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-green { background: #28a745; }
+        .status-red { background: #dc3545; }
+        .status-yellow { background: #ffc107; }
+    </style>
+</head>
+<body>
+    <h1>🔔 OneSignal Integration Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>📊 System Status</h2>
+        <div id="status-display">
+            <p><span class="status-indicator status-red"></span><span id="onesignal-status">OneSignal: Not Loaded</span></p>
+            <p><span class="status-indicator status-red"></span><span id="subscription-status">Subscription: Not Checked</span></p>
+            <p><span class="status-indicator status-red"></span><span id="notification-status">Notifications: Not Enabled</span></p>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Test Controls</h2>
+        <button class="test-button" onclick="initializeSystem()">1. Initialize OneSignal</button>
+        <button class="test-button" onclick="enableNotifications()">2. Enable Notifications</button>
+        <button class="test-button" onclick="testBasicNotification()">3. Test Basic Notification</button>
+        <button class="test-button" onclick="testAllNotificationTypes()">4. Test All Prayer Types</button>
+        <button class="test-button" onclick="testMissedPrayerAlert()">5. Test Missed Prayer</button>
+        <button class="test-button" onclick="testNotificationModes()">6. Test All Modes</button>
+        <button class="test-button" onclick="testTimingSynchronization()">7. Test Timing Sync</button>
+        <button class="test-button" onclick="testDynamicChanges()">8. Test Dynamic Changes</button>
+        <button class="test-button" onclick="testMissedPrayerIntegration()">9. Test Missed Integration</button>
+        <button class="test-button" onclick="testAutomaticMissed()">10. Test Auto Missed</button>
+        <button class="test-button" onclick="runFullTest()">🚀 Run Full Test Suite</button>
+        <button class="test-button" onclick="clearConsole()">🗑️ Clear Console</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📝 Console Output</h2>
+        <div id="console-output"></div>
+    </div>
+
+    <!-- Include OneSignal configuration -->
+    <script src="../js/onesignal-config.js"></script>
+    
+    <script>
+        // Console override to capture output
+        const originalConsole = {
+            log: console.log,
+            warn: console.warn,
+            error: console.error
+        };
+        
+        const consoleOutput = document.getElementById('console-output');
+        
+        function addToConsole(type, ...args) {
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            const colorClass = type === 'error' ? 'error' : 
+                             type === 'warn' ? 'warning' : 'success';
+            
+            consoleOutput.innerHTML += `<span class="${colorClass}">[${timestamp}] ${type.toUpperCase()}: ${message}</span>\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            
+            // Also call original console method
+            originalConsole[type](...args);
+        }
+        
+        console.log = (...args) => addToConsole('log', ...args);
+        console.warn = (...args) => addToConsole('warn', ...args);
+        console.error = (...args) => addToConsole('error', ...args);
+        
+        function clearConsole() {
+            consoleOutput.innerHTML = '';
+        }
+        
+        function updateStatus() {
+            // OneSignal Status
+            const onesignalLoaded = typeof window.oneSignalManager !== 'undefined';
+            document.getElementById('onesignal-status').textContent = 
+                `OneSignal: ${onesignalLoaded ? 'Loaded' : 'Not Loaded'}`;
+            document.querySelector('#status-display p:nth-child(1) .status-indicator').className = 
+                `status-indicator ${onesignalLoaded ? 'status-green' : 'status-red'}`;
+            
+            // Subscription Status
+            if (onesignalLoaded && window.oneSignalManager.isInitialized) {
+                const subscribed = window.oneSignalManager.isSubscribed;
+                document.getElementById('subscription-status').textContent = 
+                    `Subscription: ${subscribed ? 'Active' : 'Not Subscribed'}`;
+                document.querySelector('#status-display p:nth-child(2) .status-indicator').className = 
+                    `status-indicator ${subscribed ? 'status-green' : 'status-red'}`;
+            }
+            
+            // Notification Permission
+            const permission = Notification.permission;
+            document.getElementById('notification-status').textContent = 
+                `Notifications: ${permission}`;
+            document.querySelector('#status-display p:nth-child(3) .status-indicator').className = 
+                `status-indicator ${permission === 'granted' ? 'status-green' : 
+                permission === 'denied' ? 'status-red' : 'status-yellow'}`;
+        }
+        
+        async function initializeSystem() {
+            console.log('🚀 Initializing OneSignal system...');
+            
+            if (typeof window.oneSignalManager === 'undefined') {
+                console.error('OneSignal manager not found - check if onesignal-config.js loaded');
+                return false;
+            }
+            
+            try {
+                await window.oneSignalManager.init();
+                console.log('✅ OneSignal initialization complete');
+                updateStatus();
+                return true;
+            } catch (error) {
+                console.error('❌ OneSignal initialization failed:', error);
+                return false;
+            }
+        }
+        
+        async function enableNotifications() {
+            console.log('🔔 Requesting notification permissions...');
+            
+            if (!window.oneSignalManager) {
+                console.error('OneSignal not initialized');
+                return false;
+            }
+            
+            try {
+                const success = await window.oneSignalManager.requestPermission();
+                if (success) {
+                    console.log('✅ Notifications enabled successfully');
+                } else {
+                    console.warn('⚠️ Notification permission denied or failed');
+                }
+                updateStatus();
+                return success;
+            } catch (error) {
+                console.error('❌ Error enabling notifications:', error);
+                return false;
+            }
+        }
+        
+        async function testBasicNotification() {
+            console.log('📧 Testing basic OneSignal notification...');
+            
+            if (!window.oneSignalManager.isSubscribed) {
+                console.error('User not subscribed to OneSignal');
+                return false;
+            }
+            
+            try {
+                const success = await window.oneSignalManager.sendCustomNotification(
+                    'Test Notification',
+                    'This is a basic test notification from OneSignal',
+                    { type: 'test', timestamp: Date.now() }
+                );
+                
+                if (success) {
+                    console.log('✅ Basic notification sent successfully');
+                } else {
+                    console.error('❌ Basic notification failed');
+                }
+                return success;
+            } catch (error) {
+                console.error('❌ Error sending basic notification:', error);
+                return false;
+            }
+        }
+        
+        async function testAllNotificationTypes() {
+            console.log('🧪 Testing all prayer notification types...');
+            
+            if (typeof window.testAllPrayerNotifications === 'function') {
+                return await window.testAllPrayerNotifications();
+            } else {
+                console.error('testAllPrayerNotifications function not found');
+                return false;
+            }
+        }
+        
+        async function testMissedPrayerAlert() {
+            console.log('❌ Testing missed prayer alert...');
+            
+            if (!window.oneSignalManager.isSubscribed) {
+                console.error('User not subscribed to OneSignal');
+                return false;
+            }
+            
+            try {
+                const success = await window.oneSignalManager.sendMissedPrayerAlert('Fajr');
+                if (success) {
+                    console.log('✅ Missed prayer alert sent successfully');
+                } else {
+                    console.error('❌ Missed prayer alert failed');
+                }
+                return success;
+            } catch (error) {
+                console.error('❌ Error sending missed prayer alert:', error);
+                return false;
+            }
+        }
+        
+        async function testNotificationModes() {
+            console.log('🔄 Testing notification modes...');
+            
+            if (!window.oneSignalManager.isSubscribed) {
+                console.error('User not subscribed to OneSignal');
+                return false;
+            }
+            
+            const modes = [
+                { mode: 0, name: 'Disabled' },
+                { mode: 1, name: 'Obligatory Prayers Only' },
+                { mode: 2, name: 'All Prayers' }
+            ];
+            
+            let allSuccess = true;
+            
+            for (const modeInfo of modes) {
+                console.log(`Testing mode ${modeInfo.mode}: ${modeInfo.name}`);
+                
+                // Simulate prayer scheduling for this mode
+                const testPrayerTimes = [
+                    {
+                        name: 'Fajr',
+                        type: 'prayer',
+                        startParsed: new Date(Date.now() + 60000).toISOString(), // 1 minute from now
+                        endParsed: new Date(Date.now() + 3600000).toISOString() // 1 hour from now
+                    }
+                ];
+                
+                try {
+                    await window.oneSignalManager.schedulePrayerNotifications(testPrayerTimes, modeInfo.mode);
+                    console.log(`✅ Mode ${modeInfo.mode} (${modeInfo.name}) configured successfully`);
+                } catch (error) {
+                    console.error(`❌ Mode ${modeInfo.mode} failed:`, error);
+                    allSuccess = false;
+                }
+                
+                // Wait a moment between mode tests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            return allSuccess;
+        }
+        
+        async function testTimingSynchronization() {
+            console.log('⏰ Testing notification timing synchronization...');
+            
+            if (typeof window.testNotificationTiming === 'function') {
+                return await window.testNotificationTiming();
+            } else {
+                console.error('testNotificationTiming function not found');
+                return false;
+            }
+        }
+        
+        async function testDynamicChanges() {
+            console.log('🔄 Testing dynamic prayer time changes...');
+            
+            if (typeof window.testDynamicPrayerChanges === 'function') {
+                return await window.testDynamicPrayerChanges();
+            } else {
+                console.error('testDynamicPrayerChanges function not found');
+                return false;
+            }
+        }
+        
+        async function testMissedPrayerIntegration() {
+            console.log('❌ Testing missed prayer integration...');
+            
+            if (typeof window.testMissedPrayerIntegration === 'function') {
+                return await window.testMissedPrayerIntegration();
+            } else {
+                console.error('testMissedPrayerIntegration function not found');
+                return false;
+            }
+        }
+        
+        async function testAutomaticMissed() {
+            console.log('⏰ Testing automatic missed detection...');
+            
+            if (typeof window.testAutomaticMissedDetection === 'function') {
+                return await window.testAutomaticMissedDetection();
+            } else {
+                console.error('testAutomaticMissedDetection function not found');
+                return false;
+            }
+        }
+        
+        async function runFullTest() {
+            console.log('🚀 Running full test suite...');
+            
+            const tests = [
+                { name: 'Initialize System', func: initializeSystem },
+                { name: 'Enable Notifications', func: enableNotifications },
+                { name: 'Basic Notification', func: testBasicNotification },
+                { name: 'All Notification Types', func: testAllNotificationTypes },
+                { name: 'Missed Prayer Alert', func: testMissedPrayerAlert },
+                { name: 'Notification Modes', func: testNotificationModes },
+                { name: 'Timing Synchronization', func: testTimingSynchronization },
+                { name: 'Dynamic Prayer Changes', func: testDynamicChanges },
+                { name: 'Missed Prayer Integration', func: testMissedPrayerIntegration },
+                { name: 'Automatic Missed Detection', func: testAutomaticMissed }
+            ];
+            
+            let passedTests = 0;
+            let totalTests = tests.length;
+            
+            for (const test of tests) {
+                console.log(`\n--- Running Test: ${test.name} ---`);
+                try {
+                    const result = await test.func();
+                    if (result) {
+                        console.log(`✅ ${test.name}: PASSED`);
+                        passedTests++;
+                    } else {
+                        console.error(`❌ ${test.name}: FAILED`);
+                    }
+                } catch (error) {
+                    console.error(`❌ ${test.name}: ERROR -`, error);
+                }
+                
+                // Wait between tests
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            
+            console.log(`\n🏁 Test Suite Complete: ${passedTests}/${totalTests} tests passed`);
+            
+            if (passedTests === totalTests) {
+                console.log('🎉 ALL TESTS PASSED! OneSignal integration is working correctly.');
+            } else {
+                console.log('⚠️ Some tests failed. Check the logs above for details.');
+            }
+            
+            updateStatus();
+        }
+        
+        // Initialize status on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus();
+            
+            // Check for updates every 2 seconds
+            setInterval(updateStatus, 2000);
+            
+            console.log('🔔 OneSignal Integration Test Suite Ready');
+            console.log('Click "Run Full Test Suite" to test all functionality');
+        });
+    </script>
+</body>
+</html>
+</head>
+<body>
+    <h1>OneSignal Loading Test</h1>
+    <div id="status">Loading...</div>
+    
+    <script>
+        console.log('Starting OneSignal test...');
+        
+        // Method 1: Direct script loading
+        const script = document.createElement('script');
+        script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+        script.onload = () => {
+            console.log('✅ OneSignal script loaded successfully');
+            console.log('OneSignal object:', window.OneSignal);
+            console.log('OneSignal type:', typeof window.OneSignal);
+            document.getElementById('status').innerHTML = '✅ OneSignal loaded successfully';
+            
+            if (window.OneSignal && typeof window.OneSignal.init === 'function') {
+                console.log('✅ OneSignal.init function is available');
+                testInitialization();
+            } else {
+                console.log('❌ OneSignal.init function not available');
+            }
+        };
+        script.onerror = (error) => {
+            console.error('❌ Failed to load OneSignal script:', error);
+            document.getElementById('status').innerHTML = '❌ Failed to load OneSignal script';
+        };
+        document.head.appendChild(script);
+        
+        async function testInitialization() {
+            try {
+                console.log('Testing OneSignal initialization...');
+                await window.OneSignal.init({
+                    appId: "8126963e-3e5f-4095-8515-5f23fad6be55",
+                    allowLocalhostAsSecureOrigin: true,
+                    notifyButton: { enable: false }
+                });
+                console.log('✅ OneSignal initialized successfully');
+                document.getElementById('status').innerHTML += '<br>✅ OneSignal initialized successfully';
+            } catch (error) {
+                console.error('❌ OneSignal initialization failed:', error);
+                document.getElementById('status').innerHTML += '<br>❌ OneSignal initialization failed: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

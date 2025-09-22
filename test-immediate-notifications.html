@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Immediate Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .log {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Test Immediate Notifications</h1>
+        <p>This page tests if notifications work by scheduling them just a few seconds in the future.</p>
+        
+        <div id="status" class="status info">Ready to test notifications</div>
+        
+        <button onclick="testImmediateNotifications()">📱 Test Immediate Notifications (5s)</button>
+        <button onclick="testServiceWorkerNotifications()">⚙️ Test SW Notifications (10s)</button>
+        <button onclick="testScheduledSequence()">🕐 Test Scheduled Sequence</button>
+        <button onclick="checkCurrentPrayerTimes()">🕌 Check Current Prayer Times</button>
+        <button onclick="clearLog()">🗑️ Clear Log</button>
+        
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logEntry.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            logEntry.style.marginBottom = '5px';
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        async function testImmediateNotifications() {
+            log('🔔 Testing immediate notifications...');
+            updateStatus('Testing immediate notifications...', 'info');
+            
+            // Request permission
+            if (Notification.permission !== 'granted') {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    log('❌ Notification permission denied', 'error');
+                    updateStatus('Permission denied', 'error');
+                    return;
+                }
+            }
+
+            log('✅ Permission granted, scheduling notification in 5 seconds...');
+            
+            setTimeout(() => {
+                try {
+                    new Notification('🕐 5-Second Test', {
+                        body: 'This notification was scheduled 5 seconds ago!',
+                        icon: 'images/icon.png',
+                        tag: 'test-immediate'
+                    });
+                    log('✅ Immediate notification sent!', 'success');
+                    updateStatus('Immediate notification sent!', 'success');
+                } catch (error) {
+                    log(`❌ Failed to send notification: ${error.message}`, 'error');
+                    updateStatus('Notification failed', 'error');
+                }
+            }, 5000);
+
+            log('⏳ Waiting 5 seconds for notification...');
+        }
+
+        async function testServiceWorkerNotifications() {
+            log('⚙️ Testing service worker notifications...');
+            
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (!registration || !registration.active) {
+                log('❌ No active service worker found', 'error');
+                updateStatus('No service worker', 'error');
+                return;
+            }
+
+            log('✅ Service worker found, scheduling SW notification in 10 seconds...');
+            
+            // Create future prayer times for testing
+            const now = new Date();
+            const testPrayerStart = new Date(now.getTime() + 10000); // 10 seconds from now
+            const testPrayerEnd = new Date(now.getTime() + 20000);   // 20 seconds from now
+            
+            const testPrayer = {
+                name: 'Test Prayer',
+                type: 'prayer',
+                startParsed: testPrayerStart.toISOString(),
+                endParsed: testPrayerEnd.toISOString()
+            };
+
+            log(`📅 Test prayer start: ${testPrayerStart.toLocaleTimeString()}`);
+            log(`📅 Test prayer end: ${testPrayerEnd.toLocaleTimeString()}`);
+
+            registration.active.postMessage({
+                type: 'SCHEDULE_NOTIFICATIONS',
+                prayerTimes: [testPrayer],
+                notificationMode: 2 // All prayers
+            });
+
+            log('📤 Sent scheduling message to service worker');
+            updateStatus('SW notification scheduled', 'info');
+        }
+
+        async function testScheduledSequence() {
+            log('🕐 Testing scheduled notification sequence...');
+            
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (!registration || !registration.active) {
+                log('❌ No active service worker found', 'error');
+                return;
+            }
+
+            const now = new Date();
+            // Create a prayer that starts in 1 minute and ends in 2 minutes
+            const prayerStart = new Date(now.getTime() + 60000);  // 1 minute from now
+            const prayerEnd = new Date(now.getTime() + 120000);   // 2 minutes from now
+
+            const sequencePrayer = {
+                name: 'Sequence Test',
+                type: 'prayer',
+                startParsed: prayerStart.toISOString(),
+                endParsed: prayerEnd.toISOString()
+            };
+
+            log(`📅 Prayer start: ${prayerStart.toLocaleTimeString()}`);
+            log(`📅 Prayer end: ${prayerEnd.toLocaleTimeString()}`);
+            log('📅 Expected notifications:');
+            log(`   • Start notification at: ${new Date(prayerStart.getTime() - 60000).toLocaleTimeString()} (1 min before start)`);
+            log(`   • End notification at: ${new Date(prayerEnd.getTime() - 900000).toLocaleTimeString()} (15 min before end - if future)`);
+            log(`   • Missed check at: ${new Date(prayerEnd.getTime() + 300000).toLocaleTimeString()} (5 min after end)`);
+
+            registration.active.postMessage({
+                type: 'SCHEDULE_NOTIFICATIONS',
+                prayerTimes: [sequencePrayer],
+                notificationMode: 2
+            });
+
+            log('📤 Sequence test scheduled - watch for notifications!');
+            updateStatus('Sequence test active', 'info');
+        }
+
+        async function checkCurrentPrayerTimes() {
+            log('🕌 Checking current prayer times from main app...');
+            
+            try {
+                // Try to access prayer times from localStorage (if main app loaded them)
+                const prayerCache = localStorage.getItem('prayer_data_Mon Sep 08 2025') || 
+                                  localStorage.getItem('prayer_data_' + new Date().toDateString());
+                
+                if (prayerCache) {
+                    const data = JSON.parse(prayerCache);
+                    log('📊 Found cached prayer data:');
+                    if (data.prayers) {
+                        data.prayers.forEach(prayer => {
+                            const start = new Date(prayer.startParsed);
+                            const end = new Date(prayer.endParsed);
+                            const now = new Date();
+                            const status = now > end ? '✅ Completed' : now > start ? '🕐 Active' : '⏳ Upcoming';
+                            log(`   ${prayer.name}: ${start.toLocaleTimeString()} - ${end.toLocaleTimeString()} ${status}`);
+                        });
+                    }
+                } else {
+                    log('❌ No prayer data found in cache - load main app first');
+                }
+            } catch (error) {
+                log(`❌ Error checking prayer times: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-start on load
+        window.addEventListener('load', () => {
+            log('🚀 Immediate notification test page loaded');
+            log('💡 Click the buttons above to test different notification scenarios');
+            checkCurrentPrayerTimes();
+        });
+    </script>
+</body>
+</html>

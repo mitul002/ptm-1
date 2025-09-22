@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Qibla Compass</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .subtitle {
+            margin-bottom: 30px;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .compass-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 30px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .compass-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .cardinal-directions {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .direction {
+            position: absolute;
+            font-weight: bold;
+            font-size: 18px;
+            transform: translate(-50%, -50%);
+        }
+
+        .direction.north {
+            top: 10px;
+            left: 50%;
+            color: #ff6b6b;
+            font-size: 22px;
+        }
+
+        .direction.south {
+            bottom: 10px;
+            left: 50%;
+            color: #4ecdc4;
+        }
+
+        .direction.east {
+            right: 10px;
+            top: 50%;
+            color: #45b7d1;
+        }
+
+        .direction.west {
+            left: 10px;
+            top: 50%;
+            color: #f9ca24;
+        }
+
+        .degree-marks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .degree-mark {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            transform-origin: bottom center;
+        }
+
+        .degree-mark.major {
+            width: 2px;
+            height: 20px;
+            bottom: 50%;
+            left: 50%;
+            margin-left: -1px;
+        }
+
+        .degree-mark.minor {
+            width: 1px;
+            height: 10px;
+            bottom: 50%;
+            left: 50%;
+            margin-left: -0.5px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .needle-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 120px;
+            transform-origin: center bottom;
+            transition: transform 0.3s ease;
+        }
+
+        .compass-needle {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, #e74c3c 0%, #e74c3c 45%, #27ae60 55%, #27ae60 100%);
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .needle-tip {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 10px solid #27ae60;
+        }
+
+        .qibla-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 80px;
+            transform-origin: center bottom;
+            transition: transform 0.3s ease;
+        }
+
+        .qibla-arrow {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, #f39c12 0%, #e67e22 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.6);
+        }
+
+        .qibla-arrow::before {
+            content: '🕋';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+        }
+
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            border: 2px solid #333;
+            z-index: 10;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        .info-value {
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .status.loading {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+        }
+
+        .status.ready {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.4);
+        }
+
+        .status.error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        .calibrate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .calibrate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .calibrate-btn:active {
+            transform: translateY(0);
+        }
+
+        .accuracy-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        .accuracy-high { background: #28a745; }
+        .accuracy-medium { background: #ffc107; }
+        .accuracy-low { background: #dc3545; }
+
+        @media (max-width: 480px) {
+            .compass-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧭 Advanced Qibla Compass</h1>
+        <p class="subtitle">Accurate direction finder for prayer</p>
+        
+        <div id="status" class="status loading">
+            📍 Getting your location and compass data...
+        </div>
+
+        <div class="compass-container">
+            <div class="compass-face" id="compassFace">
+                <!-- Degree marks -->
+                <div class="degree-marks" id="degreeMarks"></div>
+                
+                <!-- Cardinal directions -->
+                <div class="cardinal-directions">
+                    <div class="direction north">N</div>
+                    <div class="direction south">S</div>
+                    <div class="direction east">E</div>
+                    <div class="direction west">W</div>
+                </div>
+            </div>
+
+            <!-- Compass needle (North) -->
+            <div class="needle-container" id="compassNeedle">
+                <div class="compass-needle">
+                    <div class="needle-tip"></div>
+                </div>
+            </div>
+
+            <!-- Qibla indicator -->
+            <div class="qibla-indicator" id="qiblaArrow">
+                <div class="qibla-arrow"></div>
+            </div>
+
+            <div class="center-dot"></div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-row">
+                <span class="info-label">Current Heading:</span>
+                <span class="info-value" id="currentHeading">---°</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Qibla Direction:</span>
+                <span class="info-value" id="qiblaDirection">---°</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Distance to Mecca:</span>
+                <span class="info-value" id="distanceToMecca">--- km</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Accuracy:</span>
+                <span class="info-value" id="accuracy">
+                    Calculating...
+                    <span class="accuracy-indicator accuracy-medium"></span>
+                </span>
+            </div>
+        </div>
+
+        <button class="calibrate-btn" onclick="calibrateCompass()">
+            📍 Calibrate Compass (Point North First)
+        </button>
+    </div>
+
+    <script>
+        class QiblaCompass {
+            constructor() {
+                this.userLat = null;
+                this.userLng = null;
+                this.qiblaDirection = 0;
+                this.currentHeading = 0;
+                this.isCalibrating = false;
+                this.calibrationOffset = 0;
+                this.needsInversion = false;
+                this.isCalibrated = false;
+                this.meccaLat = 21.4225;
+                this.meccaLng = 39.8262;
+                
+                this.init();
+            }
+
+            init() {
+                this.createDegreeMarks();
+                this.requestLocation();
+                this.setupOrientationListener();
+            }
+
+            createDegreeMarks() {
+                const degreeMarks = document.getElementById('degreeMarks');
+                
+                for (let i = 0; i < 360; i += 10) {
+                    const mark = document.createElement('div');
+                    mark.className = i % 30 === 0 ? 'degree-mark major' : 'degree-mark minor';
+                    mark.style.transform = `rotate(${i}deg)`;
+                    degreeMarks.appendChild(mark);
+                }
+            }
+
+            requestLocation() {
+                if (!navigator.geolocation) {
+                    this.showStatus('Geolocation not supported', 'error');
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        this.userLat = position.coords.latitude;
+                        this.userLng = position.coords.longitude;
+                        this.calculateQiblaDirection();
+                        this.showStatus('📍 Location found. Please calibrate compass by pointing North', 'loading');
+                        this.updateAccuracy(position.coords.accuracy);
+                    },
+                    (error) => {
+                        this.showStatus('📍 Location access denied. Using default location.', 'error');
+                        // Default to a central location if GPS fails
+                        this.userLat = 40.7128;
+                        this.userLng = -74.0060;
+                        this.calculateQiblaDirection();
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 300000
+                    }
+                );
+            }
+
+            calculateQiblaDirection() {
+                const userLatRad = this.toRadians(this.userLat);
+                const userLngRad = this.toRadians(this.userLng);
+                const meccaLatRad = this.toRadians(this.meccaLat);
+                const meccaLngRad = this.toRadians(this.meccaLng);
+
+                const deltaLng = meccaLngRad - userLngRad;
+
+                const y = Math.sin(deltaLng) * Math.cos(meccaLatRad);
+                const x = Math.cos(userLatRad) * Math.sin(meccaLatRad) - 
+                         Math.sin(userLatRad) * Math.cos(meccaLatRad) * Math.cos(deltaLng);
+
+                let bearing = Math.atan2(y, x);
+                bearing = this.toDegrees(bearing);
+                bearing = (bearing + 360) % 360;
+
+                this.qiblaDirection = bearing;
+                document.getElementById('qiblaDirection').textContent = `${bearing.toFixed(1)}°`;
+
+                // Calculate distance
+                const distance = this.calculateDistance();
+                document.getElementById('distanceToMecca').textContent = `${distance.toFixed(0)} km`;
+            }
+
+            calculateDistance() {
+                const R = 6371; // Earth's radius in km
+                const dLat = this.toRadians(this.meccaLat - this.userLat);
+                const dLng = this.toRadians(this.meccaLng - this.userLng);
+                
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                         Math.cos(this.toRadians(this.userLat)) * Math.cos(this.toRadians(this.meccaLat)) *
+                         Math.sin(dLng/2) * Math.sin(dLng/2);
+                
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            }
+
+            setupOrientationListener() {
+                if ('DeviceOrientationEvent' in window) {
+                    // Request permission for iOS 13+
+                    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                        DeviceOrientationEvent.requestPermission()
+                            .then(response => {
+                                if (response === 'granted') {
+                                    this.addOrientationListener();
+                                }
+                            });
+                    } else {
+                        this.addOrientationListener();
+                    }
+                } else {
+                    this.showStatus('Device orientation not supported', 'error');
+                }
+            }
+
+            addOrientationListener() {
+                window.addEventListener('deviceorientationabsolute', (event) => {
+                    this.handleOrientation(event);
+                });
+
+                window.addEventListener('deviceorientation', (event) => {
+                    if (!event.absolute) return;
+                    this.handleOrientation(event);
+                });
+            }
+
+            handleOrientation(event) {
+                if (this.isCalibrating) return;
+
+                let heading = event.alpha;
+                if (heading === null || heading === undefined) return;
+
+                // Handle different browser implementations
+                // iOS Safari and some Android browsers report differently
+                if (event.webkitCompassHeading) {
+                    // iOS Safari
+                    heading = event.webkitCompassHeading;
+                } else {
+                    // Standard implementation - but needs adjustment
+                    heading = event.alpha;
+                    
+                    // Apply calibration offset if set
+                    if (this.calibrationOffset !== undefined) {
+                        heading = heading + this.calibrationOffset;
+                    }
+                    
+                    // For many Android devices, alpha needs to be inverted
+                    if (this.needsInversion) {
+                        heading = 360 - heading;
+                    }
+                }
+
+                // Normalize heading
+                heading = (heading + 360) % 360;
+
+                this.currentHeading = heading;
+                this.updateCompass();
+            }
+
+            updateCompass() {
+                // Update needle (always points north)
+                const needle = document.getElementById('compassNeedle');
+                needle.style.transform = `translate(-50%, -50%) rotate(${-this.currentHeading}deg)`;
+
+                // Update compass face (rotates opposite to needle)
+                const compassFace = document.getElementById('compassFace');
+                compassFace.style.transform = `rotate(${this.currentHeading}deg)`;
+
+                // Update Qibla arrow
+                const qiblaArrow = document.getElementById('qiblaArrow');
+                const qiblaAngle = this.qiblaDirection - this.currentHeading;
+                qiblaArrow.style.transform = `translate(-50%, -50%) rotate(${qiblaAngle}deg)`;
+
+                // Update heading display
+                document.getElementById('currentHeading').textContent = `${this.currentHeading.toFixed(1)}°`;
+            }
+
+            updateAccuracy(accuracy) {
+                const accuracyEl = document.getElementById('accuracy');
+                const indicator = accuracyEl.querySelector('.accuracy-indicator');
+                
+                if (accuracy < 10) {
+                    accuracyEl.innerHTML = 'High <span class="accuracy-indicator accuracy-high"></span>';
+                } else if (accuracy < 50) {
+                    accuracyEl.innerHTML = 'Medium <span class="accuracy-indicator accuracy-medium"></span>';
+                } else {
+                    accuracyEl.innerHTML = 'Low <span class="accuracy-indicator accuracy-low"></span>';
+                }
+            }
+
+            showStatus(message, type) {
+                const status = document.getElementById('status');
+                status.textContent = message;
+                status.className = `status ${type}`;
+            }
+
+            toRadians(degrees) {
+                return degrees * Math.PI / 180;
+            }
+
+            toDegrees(radians) {
+                return radians * 180 / Math.PI;
+            }
+        }
+
+        function calibrateCompass() {
+            const compass = window.qiblaCompass;
+            if (!compass) return;
+
+            compass.isCalibrating = true;
+            const btn = document.querySelector('.calibrate-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '🔄 Point North & Hold Still...';
+            
+            // Show calibration instructions
+            compass.showStatus('📍 Point your device North and keep it steady for 3 seconds...', 'loading');
+            
+            let calibrationReadings = [];
+            let readingCount = 0;
+            const totalReadings = 30; // 3 seconds of readings at ~10Hz
+            
+            const calibrationInterval = setInterval(() => {
+                if (compass.currentHeading !== undefined) {
+                    calibrationReadings.push(compass.currentHeading);
+                    readingCount++;
+                    
+                    // Update progress
+                    const progress = Math.round((readingCount / totalReadings) * 100);
+                    btn.textContent = `🔄 Calibrating... ${progress}%`;
+                }
+                
+                if (readingCount >= totalReadings) {
+                    clearInterval(calibrationInterval);
+                    
+                    // Calculate average reading while pointing north
+                    const averageReading = calibrationReadings.reduce((a, b) => a + b, 0) / calibrationReadings.length;
+                    
+                    // Calculate offset needed to make this reading equal to 0° (North)
+                    compass.calibrationOffset = -averageReading;
+                    
+                    // Test if we need inversion (for Android devices)
+                    // If the reading is around 180° when pointing north, we need inversion
+                    if (Math.abs(averageReading - 180) < Math.abs(averageReading - 0)) {
+                        compass.needsInversion = true;
+                        compass.calibrationOffset = 180 - averageReading;
+                    } else {
+                        compass.needsInversion = false;
+                    }
+                    
+                    compass.isCalibrating = false;
+                    btn.textContent = originalText;
+                    compass.showStatus('✅ Compass calibrated! North should now read 0°', 'ready');
+                    
+                    // Save calibration for this session
+                    compass.isCalibrated = true;
+                }
+            }, 100);
+            
+            // Timeout after 10 seconds
+            setTimeout(() => {
+                if (compass.isCalibrating) {
+                    clearInterval(calibrationInterval);
+                    compass.isCalibrating = false;
+                    btn.textContent = originalText;
+                    compass.showStatus('⚠️ Calibration timeout. Try again in a clear area.', 'error');
+                }
+            }, 10000);
+        }
+
+        // Initialize compass when page loads
+        window.addEventListener('load', () => {
+            window.qiblaCompass = new QiblaCompass();
+        });
+    </script>
+</body>
+</html>

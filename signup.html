@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Times - Sign Up</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/auth.css">
+    <!-- Firebase CDN Scripts -->
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RBE4169XBF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RBE4169XBF');
+    </script>
+</head>
+<body class="auth-body" data-theme="dark">
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+
+                    <img src="images/icon.png" width="60" height="60" >
+
+                <h1 class="auth-title">Create Account</h1>
+                <p class="auth-subtitle">Join Prayer Times to sync your data</p>
+            </div>
+
+            <form class="auth-form" id="signupForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Create a password" required>
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText"></div>
+                        <ul class="strength-feedback" id="strengthFeedback"></ul>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                </div>
+
+                <div id="authMessage" class="auth-message"></div>
+
+                <button type="submit" class="auth-btn">Create Account</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="login.html" class="auth-link">Already have an account? Sign In</a>
+            </div>
+
+         
+
+            <div class="guest-option">
+                <p style="margin-bottom: 10px; color: var(--text-secondary);">Just want to explore?</p>
+                <button class="guest-btn">Continue as Guest</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/firebase-config.js"></script>
+    <script src="js/shared.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/data-sync.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const signupForm = document.getElementById('signupForm');
+            const passwordInput = document.getElementById('password');
+            const strengthBar = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+            const strengthFeedback = document.getElementById('strengthFeedback');
+
+            // Password strength indicator
+            if (passwordInput && strengthBar && strengthText && strengthFeedback) {
+                passwordInput.addEventListener('input', () => {
+                    const password = passwordInput.value;
+                    const strength = window.checkPasswordStrength ? window.checkPasswordStrength(password) : { score: 0, level: 'weak', feedback: [] };
+                    
+                    // Update strength bar
+                    const percentage = (strength.score / 5) * 100;
+                    strengthBar.style.width = `${percentage}%`;
+                    strengthBar.className = `strength-fill ${strength.level}`;
+                    
+                    // Update strength text
+                    const strengthLabels = {
+                        'weak': 'Weak',
+                        'medium': 'Medium',
+                        'strong': 'Strong',
+                        'very-strong': 'Very Strong'
+                    };
+                    strengthText.textContent = password.length > 0 ? strengthLabels[strength.level] : 'Enter a password';
+                    
+                    // Update feedback
+                    strengthFeedback.innerHTML = '';
+                    strength.feedback.forEach(feedback => {
+                        const li = document.createElement('li');
+                        li.textContent = feedback;
+                        strengthFeedback.appendChild(li);
+                    });
+                });
+            }
+
+            if (signupForm) {
+                signupForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    const authMessage = document.getElementById('authMessage');
+                    const signupBtn = signupForm.querySelector('button[type="submit"]');
+
+                    if (password !== confirmPassword) {
+                        authMessage.textContent = 'Passwords do not match';
+                        authMessage.classList.add('error');
+                        return;
+                    }
+
+                    if (password.length < 6) {
+                        authMessage.textContent = 'Password must be at least 6 characters';
+                        authMessage.classList.add('error');
+                        return;
+                    }
+
+                    signupBtn.disabled = true;
+                    signupBtn.textContent = 'Creating Account...';
+                    authMessage.textContent = '';
+                    authMessage.className = 'auth-message';
+
+                    const result = await window.registerUser(email, password, true);
+                    if (result.success) {
+                        authMessage.textContent = result.verificationSent 
+                            ? 'Account created successfully! Please check your email for verification before logging in.'
+                            : 'Account created successfully! Please log in.';
+                        authMessage.classList.add('success');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 3000);
+                    } else {
+                        authMessage.textContent = result.error;
+                        authMessage.classList.add('error');
+                        signupBtn.disabled = false;
+                        signupBtn.textContent = 'Create Account';
+                    }
+                });
+            }
+
+            // Theme toggle for auth pages
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.prayerTimesApp) {
+                themeToggle.addEventListener('click', () => {
+                    window.prayerTimesApp.toggleTheme();
+                });
+                // Apply initial theme
+                window.prayerTimesApp.applyTheme();
+            }
+
+            // Handle Continue as Guest button
+            const guestButton = document.querySelector('.guest-btn');
+            if (guestButton) {
+                guestButton.addEventListener('click', () => {
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+</html>

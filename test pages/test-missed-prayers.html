@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Tracker Missed Alert Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .test-button:hover {
+            background: #c82333;
+        }
+        
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .warning { color: #ffc107; font-weight: bold; }
+        
+        #console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>❌ Prayer Tracker Missed Alert Test</h1>
+    
+    <div class="test-section">
+        <h2>🎯 Purpose</h2>
+        <p>This test verifies that missed prayer alerts work correctly when prayers are detected as missed by the prayer tracker system.</p>
+        <p><strong>How it works:</strong> When you visit prayer-tracker.html and a prayer time has passed without being marked as completed, the system automatically sends both local and OneSignal push notifications.</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Test Controls</h2>
+        <button class="test-button" onclick="testMissedPrayerFlow()">📱 Test Missed Prayer Flow</button>
+        <button class="test-button" onclick="simulateRealMissedPrayer()">⏰ Simulate Real Missed Prayer</button>
+        <button class="test-button" onclick="testPrayerTrackerIntegration()">🔗 Test Prayer Tracker Integration</button>
+        <button class="test-button" onclick="clearConsole()">🗑️ Clear Console</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📝 Console Output</h2>
+        <div id="console-output"></div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="../js/onesignal-config.js"></script>
+
+    <script>
+        // Console override to capture output
+        const originalConsole = {
+            log: console.log,
+            warn: console.warn,
+            error: console.error
+        };
+        
+        const consoleOutput = document.getElementById('console-output');
+        
+        function addToConsole(type, ...args) {
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            const colorClass = type === 'error' ? 'error' : 
+                             type === 'warn' ? 'warning' : 'success';
+            
+            consoleOutput.innerHTML += `<span class="${colorClass}">[${timestamp}] ${type.toUpperCase()}: ${message}</span>\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            
+            // Also call original console method
+            originalConsole[type](...args);
+        }
+        
+        console.log = (...args) => addToConsole('log', ...args);
+        console.warn = (...args) => addToConsole('warn', ...args);
+        console.error = (...args) => addToConsole('error', ...args);
+        
+        function clearConsole() {
+            consoleOutput.innerHTML = '';
+        }
+        
+        async function testMissedPrayerFlow() {
+            console.log('🧪 Testing missed prayer notification flow...');
+            
+            // Check if OneSignal is available and subscribed
+            if (!window.oneSignalManager || !window.oneSignalManager.isSubscribed) {
+                console.error('❌ OneSignal not subscribed - please enable notifications first');
+                console.log('💡 Go to the main page and enable notifications before testing');
+                return false;
+            }
+            
+            console.log('✅ OneSignal is subscribed and ready');
+            
+            // Simulate the exact flow that happens in prayer tracker
+            console.log('📋 Simulating prayer tracker missed prayer detection...');
+            
+            // This is what prayer tracker does when it detects a missed prayer
+            const title = 'Prayer Missed';
+            const body = 'You have missed the Fajr prayer.';
+            
+            console.log('📧 Prayer tracker would call showNotification() with:', { title, body });
+            
+            // Simulate the showNotification function from prayer tracker
+            console.log('🔍 Testing prayer name extraction...');
+            const prayerName = body.match(/missed the (\w+) prayer/i);
+            
+            if (prayerName && prayerName[1]) {
+                console.log(`✅ Prayer name extracted: ${prayerName[1]}`);
+                
+                // Test OneSignal integration
+                console.log('📱 Sending OneSignal missed prayer alert...');
+                
+                if (window.OneSignalConfig && window.OneSignalConfig.sendMissedPrayerAlert) {
+                    try {
+                        const success = await window.OneSignalConfig.sendMissedPrayerAlert(prayerName[1]);
+                        if (success) {
+                            console.log('✅ OneSignal missed prayer alert sent successfully!');
+                            console.log('📱 Check your device for the push notification');
+                        } else {
+                            console.error('❌ Failed to send OneSignal missed prayer alert');
+                        }
+                    } catch (error) {
+                        console.error('❌ Error sending OneSignal alert:', error);
+                    }
+                } else {
+                    console.error('❌ OneSignalConfig.sendMissedPrayerAlert not available');
+                }
+                
+                // Test local notification
+                console.log('🔔 Testing local notification...');
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.ready.then(function(registration) {
+                        registration.active.postMessage({
+                            type: 'PRAYER_REMINDER',
+                            title: title,
+                            body: body,
+                            tag: 'prayer-reminder-' + Date.now()
+                        });
+                        console.log('✅ Local notification sent via service worker');
+                    });
+                } else {
+                    console.warn('⚠️ Service worker not available for local notifications');
+                }
+                
+            } else {
+                console.error('❌ Failed to extract prayer name from message');
+                return false;
+            }
+            
+            console.log('🎯 Test complete! You should have received both local and push notifications');
+            return true;
+        }
+        
+        async function simulateRealMissedPrayer() {
+            console.log('⏰ Simulating real missed prayer scenario...');
+            
+            const now = new Date();
+            const fajrEndTime = new Date(now.getTime() - 600000); // 10 minutes ago
+            
+            console.log(`🕐 Simulating scenario: Fajr ended at ${fajrEndTime.toLocaleTimeString()}`);
+            console.log(`🕐 Current time: ${now.toLocaleTimeString()}`);
+            console.log('📊 Prayer status: Not marked as completed (would be detected as missed)');
+            
+            console.log('🔍 In real app, when you visit prayer-tracker.html:');
+            console.log('   1. Prayer tracker checks all prayers for today');
+            console.log('   2. Finds Fajr ended 10 minutes ago but not marked as completed');
+            console.log('   3. Automatically marks it as "missed"');
+            console.log('   4. Calls showNotification() with missed prayer message');
+            console.log('   5. Both local and OneSignal notifications are sent');
+            
+            // Now test the actual notification
+            return await testMissedPrayerFlow();
+        }
+        
+        async function testPrayerTrackerIntegration() {
+            console.log('🔗 Testing prayer tracker integration points...');
+            
+            // Check all required components
+            const checks = [
+                {
+                    name: 'OneSignal Manager',
+                    condition: !!window.oneSignalManager,
+                    details: window.oneSignalManager ? 'Available' : 'Not found'
+                },
+                {
+                    name: 'OneSignal Subscription',
+                    condition: window.oneSignalManager?.isSubscribed,
+                    details: window.oneSignalManager?.isSubscribed ? 'Active' : 'Not subscribed'
+                },
+                {
+                    name: 'OneSignalConfig Global',
+                    condition: !!window.OneSignalConfig,
+                    details: window.OneSignalConfig ? 'Available' : 'Not found'
+                },
+                {
+                    name: 'sendMissedPrayerAlert Function',
+                    condition: !!(window.OneSignalConfig?.sendMissedPrayerAlert),
+                    details: window.OneSignalConfig?.sendMissedPrayerAlert ? 'Available' : 'Not found'
+                },
+                {
+                    name: 'Service Worker',
+                    condition: 'serviceWorker' in navigator,
+                    details: 'serviceWorker' in navigator ? 'Supported' : 'Not supported'
+                },
+                {
+                    name: 'Notification Permission',
+                    condition: Notification.permission === 'granted',
+                    details: `Permission: ${Notification.permission}`
+                }
+            ];
+            
+            console.log('📊 Integration check results:');
+            let allPassed = true;
+            
+            checks.forEach(check => {
+                if (check.condition) {
+                    console.log(`✅ ${check.name}: ${check.details}`);
+                } else {
+                    console.error(`❌ ${check.name}: ${check.details}`);
+                    allPassed = false;
+                }
+            });
+            
+            if (allPassed) {
+                console.log('🎉 All integration checks passed!');
+                console.log('✅ Missed prayer alerts should work correctly from prayer-tracker.html');
+                
+                // Test a sample integration
+                return await testMissedPrayerFlow();
+            } else {
+                console.error('❌ Some integration checks failed - missed prayer alerts may not work');
+                return false;
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('❌ Prayer Tracker Missed Alert Test Ready');
+            console.log('💡 Click the test buttons to verify missed prayer notifications work');
+            console.log('🔔 Make sure notifications are enabled before testing');
+        });
+    </script>
+</body>
+</html>

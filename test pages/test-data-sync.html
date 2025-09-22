@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Sync Test Helper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        .btn {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn.danger {
+            background-color: #dc3545;
+        }
+        .btn.danger:hover {
+            background-color: #c82333;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Data Sync Test Helper</h1>
+        <p>This page helps you test the data sync conflict resolution mechanism.</p>
+
+        <div class="section">
+            <h2>Current Status</h2>
+            <div id="authStatus" class="status info">Checking authentication...</div>
+            <div id="dataStatus" class="status info">Checking local data...</div>
+            <div id="syncStatus" class="status info">Checking sync state...</div>
+        </div>
+
+        <div class="section">
+            <h2>Test Data Generation</h2>
+            <button class="btn" onclick="generateGuestData()">Generate Guest Data</button>
+            <button class="btn danger" onclick="clearLocalData()">Clear Local Data</button>
+            <div id="dataGenStatus"></div>
+        </div>
+
+        <div class="section">
+            <h2>Authentication</h2>
+            <button class="btn" onclick="goToLogin()">Go to Login Page</button>
+            <button class="btn" onclick="logout()">Logout (Clear All Data)</button>
+            <button class="btn" onclick="testComprehensiveClear()">Test Comprehensive Data Clear</button>
+        </div>
+
+        <div class="section">
+            <h2>Navigation Test</h2>
+            <button class="btn" onclick="testNavigation()">Test Page Navigation</button>
+            <button class="btn" onclick="goToMainPage()">Go to Main Page</button>
+            <button class="btn" onclick="goToDhikrPage()">Go to Dhikr Page</button>
+            <div id="navigationStatus"></div>
+            <p><strong>Instructions:</strong> Generate guest data, then use these buttons to navigate between pages and verify data persists.</p>
+        </div>
+
+        <div class="section">
+            <h2>Local Storage Contents</h2>
+            <button class="btn" onclick="showLocalStorage()">Show Local Storage</button>
+            <pre id="localStorageContent"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Session Storage Contents</h2>
+            <button class="btn" onclick="showSessionStorage()">Show Session Storage</button>
+            <pre id="sessionStorageContent"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Debug Information</h2>
+            <button class="btn" onclick="showDebugInfo()">Show Debug Info</button>
+            <pre id="debugInfo"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Real-Time Debug Console</h2>
+            <button class="btn" onclick="startConsoleMonitoring()">Start Console Monitoring</button>
+            <button class="btn" onclick="clearConsoleLog()">Clear Console</button>
+            <div id="consoleOutput" style="height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border: 1px solid #ddd; margin: 10px 0;"></div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script>
+        // Wait for Firebase to load
+        setTimeout(initializeTestHelper, 1000);
+
+        function initializeTestHelper() {
+            updateStatus();
+            // Listen for auth changes
+            if (window.firebaseAuth && window.firebaseAuth.onAuthStateChanged) {
+                window.firebaseAuth.onAuthStateChanged((user) => {
+                    updateStatus();
+                });
+            }
+        }
+
+        function updateStatus() {
+            // Update auth status
+            const authStatus = document.getElementById('authStatus');
+            if (window.firebaseAuth && window.firebaseAuth.currentUser) {
+                authStatus.textContent = `Logged in as: ${window.firebaseAuth.currentUser.email}`;
+                authStatus.className = 'status success';
+            } else {
+                authStatus.textContent = 'Not logged in (Guest mode)';
+                authStatus.className = 'status warning';
+            }
+
+            // Update data status
+            const dataStatus = document.getElementById('dataStatus');
+            const hasData = checkLocalData();
+            if (hasData.length > 0) {
+                dataStatus.textContent = `Local data found: ${hasData.join(', ')}`;
+                dataStatus.className = 'status info';
+            } else {
+                dataStatus.textContent = 'No local data found';
+                dataStatus.className = 'status warning';
+            }
+
+            // Update sync status
+            const syncStatus = document.getElementById('syncStatus');
+            const user = window.firebaseAuth?.currentUser;
+            if (user) {
+                const sessionSyncKey = `syncCompleted_${user.uid}`;
+                const syncCompleted = sessionStorage.getItem(sessionSyncKey);
+                if (syncCompleted === 'true') {
+                    syncStatus.textContent = `Sync completed for user: ${user.email}`;
+                    syncStatus.className = 'status success';
+                } else {
+                    syncStatus.textContent = `No sync completed for current user: ${user.email}`;
+                    syncStatus.className = 'status warning';
+                }
+            } else {
+                syncStatus.textContent = 'No user logged in';
+                syncStatus.className = 'status info';
+            }
+        }
+
+        function checkLocalData() {
+            const syncKeys = [
+                'language', 'theme', 'notificationMode', 'prayerMethod', 'prayerSchool',
+                'userLocation', 'timeFormat', 'dhikr-session', 'dhikr-settings', 'dhikr-stats',
+                'prayerTrackerData', 'obligatoryPrayers', 'missedPrayerReminders',
+                'notificationSound', 'qazaCount', 'missedPrayerSortOrder', 'lastVisitDate'
+            ];
+            
+            const foundKeys = [];
+            syncKeys.forEach(key => {
+                if (localStorage.getItem(key) !== null) {
+                    foundKeys.push(key);
+                }
+            });
+            return foundKeys;
+        }
+
+        function generateGuestData() {
+            // Generate some sample guest data
+            localStorage.setItem('language', 'en');
+            localStorage.setItem('theme', 'light');
+            localStorage.setItem('dhikr-stats', JSON.stringify({
+                totalCount: 100,
+                streak: 5,
+                completedSessions: 10
+            }));
+            localStorage.setItem('prayerTrackerData', JSON.stringify({
+                '2024-01-15': { fajr: 'completed', dhuhr: 'completed', asr: 'missed' }
+            }));
+            localStorage.setItem('userLocation', JSON.stringify({
+                latitude: 40.7128,
+                longitude: -74.0060,
+                city: 'New York'
+            }));
+
+            document.getElementById('dataGenStatus').innerHTML = 
+                '<div class="status success">Guest data generated successfully!</div>';
+            updateStatus();
+        }
+
+        function clearLocalData() {
+            const syncKeys = [
+                'language', 'theme', 'notificationMode', 'prayerMethod', 'prayerSchool',
+                'userLocation', 'timeFormat', 'dhikr-session', 'dhikr-settings', 'dhikr-stats',
+                'prayerTrackerData', 'obligatoryPrayers', 'missedPrayerReminders',
+                'notificationSound', 'qazaCount', 'missedPrayerSortOrder', 'lastVisitDate'
+            ];
+            
+            syncKeys.forEach(key => localStorage.removeItem(key));
+            
+            // Clear all sync completion flags
+            const keysToRemove = [];
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                if (key && key.startsWith('syncCompleted_')) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(key => sessionStorage.removeItem(key));
+
+            document.getElementById('dataGenStatus').innerHTML = 
+                '<div class="status success">Local data and sync flags cleared successfully!</div>';
+            updateStatus();
+        }
+
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            if (window.logoutUser) {
+                window.logoutUser().then((result) => {
+                    if (result.success) {
+                        updateStatus();
+                        alert('Logged out successfully. All local data cleared.');
+                    } else {
+                        alert('Logout failed: ' + result.error);
+                    }
+                });
+            } else if (window.firebaseAuth && window.firebaseAuth.currentUser) {
+                window.firebaseAuth.signOut().then(() => {
+                    // Clear all data manually if logoutUser is not available
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    updateStatus();
+                    alert('Logged out successfully. All local data cleared.');
+                });
+            } else {
+                alert('No user is currently logged in.');
+            }
+        }
+
+        function showLocalStorage() {
+            const content = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                content[key] = localStorage.getItem(key);
+            }
+            document.getElementById('localStorageContent').textContent = 
+                JSON.stringify(content, null, 2);
+        }
+
+        function showSessionStorage() {
+            const content = {};
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                content[key] = sessionStorage.getItem(key);
+            }
+            document.getElementById('sessionStorageContent').textContent = 
+                JSON.stringify(content, null, 2);
+        }
+
+        function showDebugInfo() {
+            const info = {
+                currentUser: window.firebaseAuth?.currentUser?.email || 'None',
+                dataSyncAvailable: typeof window.dataSync !== 'undefined',
+                authContextAvailable: typeof window.authContext !== 'undefined',
+                hasLocalData: checkLocalData(),
+                syncSessionFlag: sessionStorage.getItem('dataSyncCompleted'),
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            };
+            document.getElementById('debugInfo').textContent = 
+                JSON.stringify(info, null, 2);
+        }
+
+        // Console monitoring functions
+        let originalConsoleLog = console.log;
+        let originalConsoleError = console.error;
+        let originalConsoleWarn = console.warn;
+        let consoleMonitoring = false;
+
+        function startConsoleMonitoring() {
+            if (consoleMonitoring) return;
+            
+            consoleMonitoring = true;
+            const output = document.getElementById('consoleOutput');
+            
+            function logToDiv(type, message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('div');
+                logEntry.style.marginBottom = '2px';
+                logEntry.style.fontSize = '12px';
+                logEntry.innerHTML = `<span style="color: #666;">[${timestamp}]</span> <span style="color: ${type === 'error' ? 'red' : type === 'warn' ? 'orange' : 'black'};">${type.toUpperCase()}:</span> ${message}`;
+                output.appendChild(logEntry);
+                output.scrollTop = output.scrollHeight;
+            }
+            
+            console.log = function(...args) {
+                originalConsoleLog.apply(console, args);
+                logToDiv('log', args.join(' '));
+            };
+            
+            console.error = function(...args) {
+                originalConsoleError.apply(console, args);
+                logToDiv('error', args.join(' '));
+            };
+            
+            console.warn = function(...args) {
+                originalConsoleWarn.apply(console, args);
+                logToDiv('warn', args.join(' '));
+            };
+        }
+
+        function clearConsoleLog() {
+            document.getElementById('consoleOutput').innerHTML = '';
+        }
+
+        function testNavigation() {
+            const beforeData = checkLocalData();
+            document.getElementById('navigationStatus').innerHTML = 
+                `<div class="status info">Before navigation: ${beforeData.length} data keys found: ${beforeData.join(', ')}</div>`;
+            
+            // Navigate to index and back
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+
+        function goToMainPage() {
+            window.location.href = 'index.html';
+        }
+
+        function goToDhikrPage() {
+            window.location.href = 'dhikr-counter.html';
+        }
+
+        function testComprehensiveClear() {
+            if (window.dataSync && window.dataSync.clearAllLocalData) {
+                const beforeCount = localStorage.length + sessionStorage.length;
+                window.dataSync.clearAllLocalData();
+                const afterCount = localStorage.length + sessionStorage.length;
+                
+                document.getElementById('navigationStatus').innerHTML = 
+                    `<div class="status success">Comprehensive clear completed! Before: ${beforeCount} items, After: ${afterCount} items</div>`;
+                updateStatus();
+            } else {
+                document.getElementById('navigationStatus').innerHTML = 
+                    `<div class="status warning">dataSync.clearAllLocalData not available</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

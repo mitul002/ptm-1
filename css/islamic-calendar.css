@@ -1,0 +1,750 @@
+/* Card Styles */
+.card {
+    background: var(--bg-card);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), var(--glow);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), var(--glow);
+}
+
+/* Main Content */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-bottom: 40px;
+}
+
+/* Date Display */
+.date-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.hijri-date-card, .gregorian-date-card {
+    text-align: center;
+    padding: 20px;
+}
+
+.hijri-date-card h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.gregorian-date-card h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+
+.moon-phase {
+    margin-top: 15px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.moon-phase i {
+    font-size: 32px;
+    color: var(--warning-color);
+}
+
+/* Calendar Navigation */
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.current-month {
+    text-align: center;
+}
+
+.current-month h3 {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+}
+
+.current-month p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.mobile-only-selected-day {
+    display: none;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+/* Calendar Controls */
+.calendar-controls {
+    padding: 15px 20px;
+}
+
+.view-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.view-btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.view-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.view-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Selected Date Display */
+.selected-date-display {
+    padding: 20px;
+}
+
+.selected-date-display h3 {
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.date-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.hijri-info, .gregorian-info {
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-weight: 600;
+    padding: 10px 0;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.calendar-day {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+.calendar-day::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+.calendar-day:hover::before {
+    left: 100%;
+}
+
+.calendar-day:not(.day-name):hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), var(--glow);
+}
+
+.calendar-day.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.calendar-day.today {
+    background: var(--accent); /* Using accent from style.css */
+    color: white;
+    box-shadow: 0 0 15px var(--accent-glow); /* Using accent-glow from style.css */
+}
+
+.calendar-day.selected {
+    border: 2px solid var(--accent); /* Using accent from style.css */
+    box-shadow: 0 0 15px var(--accent); /* Using accent from style.css */
+}
+
+.calendar-day.day-name {
+    background: transparent;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.calendar-day.has-event::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: red; /* Explicitly red for testing */
+    z-index: 10; /* Ensure it's on top */
+}
+
+.gregorian-date {
+    font-size: 14px; /* Reduced font size */
+    position: absolute; /* Position relative to .calendar-day */
+    top: 5px;
+    left: 5px;
+    color: var(--text-primary); /* Ensure visibility */
+}
+
+.calendar-grid .hijri-date {
+        /* Reset conflicting styles from style.css */
+        background: none;
+        padding: 15px 0px;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        font-size: 17px;
+        font-weight: bold;
+
+    }
+
+/* Events Section */
+.events-section {
+    padding: 20px;
+}
+
+.events-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.events-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+}
+
+.events-search {
+    position: relative;
+}
+
+.event-search-input {
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 14px;
+    min-width: 300px; /* Increased min-width */
+    transition: all 0.3s ease;
+}
+
+.event-search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: var(--glow); /* Added box-shadow */
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.event-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start; /* Changed to flex-start */
+    flex-wrap: wrap; /* Added flex-wrap */
+    transition: all 0.3s ease;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative; /* Added */
+    overflow: hidden; /* Added */
+}
+
+.event-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), var(--glow);
+}
+
+.event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.event-card:hover::before {
+    left: 100%;
+}
+
+
+
+.event-date {
+    text-align: center;
+    flex-shrink: 0;
+    flex-basis: 80px;
+}
+
+.event-date .hijri {
+    color: var(--primary-color);
+    display: block;
+}
+
+.event-date .gregorian {
+    font-size: 14px;
+    color: var(--text-secondary);
+    display: block;
+}
+
+.event-info {
+    flex-grow: 1;
+}
+
+.event-info h4 {
+    margin-bottom: 5px;
+    color: var(--text-primary);
+}
+
+.event-info p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.event-type {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    background: var(--primary-color);
+    color: white;
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    padding: 20px;
+}
+
+.stat-card {
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+
+.stat-card h4 {
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.stat-card p {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+
+.
+
+
+
+
+
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.drawer-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .date-display {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+    
+    .events-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .events-search {
+        max-width: 100%;
+        flex-grow: 1;
+        min-width: unset;
+        width: 100%;
+    }
+
+    .event-card {
+        gap: 10px;
+        flex-wrap: nowrap;
+    }
+
+    .event-date {
+        flex-basis: 60px;
+    }
+
+    .event-info h4 {
+        font-size: 16px;
+    }
+
+    .event-info p {
+        font-size: 12px;
+    }
+
+    .event-type {
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+
+    .event-search-input {
+        padding: 10px 40px 10px 15px;
+        font-size: 14px;
+        border-radius: 12px;
+        min-width: unset;
+        width: 100%;
+    }
+
+    .search-icon {
+        right: 12px;
+        font-size: 16px;
+    }
+    
+    .view-controls {
+        gap: 8px; /* Reduced gap */
+        justify-content: center; /* Center align buttons when wrapped */
+        flex-wrap: wrap;
+    }
+
+    .view-btn {
+        padding: 8px 12px; /* Reduced padding */
+        font-size: 13px; /* Slightly smaller font */
+        gap: 6px; /* Reduced gap within button */
+    }
+    
+    .calendar-grid {
+        gap: 4px;
+    }
+    
+    .calendar-day {
+        padding: 4px;
+    }
+    
+    .gregorian-date {
+        font-size: 10px;
+    }
+    
+    .calendar-grid .hijri-date {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    /* Only font size adjustments for calendar-nav and its children */
+
+
+    .hijri-selected-date,
+    .gregorian-selected-date {
+        display: none; /* Hide in mobile version */
+    }
+
+    .countdown-time {
+        font-size: 20px;
+        gap: 2px;
+        flex-wrap: wrap;
+        font-weight: 500;
+    }
+
+    .countdown-time span {
+        padding: 8px 12px;
+        font-size: 20px;
+    }
+
+    .mobile-only-selected-day {
+        display: block;
+    }
+}
+
+/* Error Message */
+.error-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--danger-color);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Loading State */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* No Events Message */
+.no-events {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.no-events i {
+    font-size: 40px;
+    margin-bottom: 15px;
+    display: block;
+}/* Moon Phase Display */
+.moon-phase {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.moon-phase h3 {
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    font-size: 20px;
+}
+
+.moon-emoji {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.moon-phase-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.moon-age {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.countdown-display {
+    margin-top: 20px;
+    padding: 15px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.countdown-label {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.countdown-time {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.countdown-time span {
+    background: var(--primary-color-alpha);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+/* Event Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: var(--bg-card);
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.close-button {
+    color: var(--text-muted);
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.event-dot {
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
